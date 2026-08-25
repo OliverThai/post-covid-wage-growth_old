@@ -1,21 +1,22 @@
 Raw data files expected by this project
 ========================================
 
-1. IPUMS ACS or CPS labor microdata
+1. ACS/IPUMS labor microdata
 
-   data/raw/ipums_labor.dta
-   or
-   data/raw/ipums_labor.csv
+   Expected file:
+   code/usa_00001.dta
 
-   Include YEAR, AGE, SEX, RACE, EDUC/EDUCD, STATEFIP, OCC/OCC2010, IND,
-   PERWT, and wage/hours variables such as INCWAGE, EARNWEEK, UHRSWORK,
-   UHRSWORKT, WKSWORK1, or WKSWORK2.
+   Include these IPUMS variables:
+   YEAR, AGE, SEX, RACE, EDUC, EMPSTAT, OCC, IND, STATEFIP,
+   INCWAGE, UHRSWORK, WKSWORK1, PERWT.
 
-2. Occupation remote-workability scores
+2. Dingel-Neiman occupation remote-workability data
 
-   data/raw/remote_work_scores.csv
+   Expected file:
+   data/raw/remote/occupations_workathome.csv
 
-   Required columns: occ_code and remote_score or wfh_score.
-   Suggested source: https://github.com/jdingel/DingelNeiman-workathome
+   Run code/02_inspect_remote.do first to identify the occupation-code
+   variable and remote-workability variable. Then update the macros in
+   code/03_clean_remote.do if the automatic guesses are wrong.
 
 The scripts stop rather than fake results when these files are missing.
