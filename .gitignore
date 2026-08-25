@@ -16,6 +16,7 @@ data/processed/*.dta
 *.smcl
 *.log
 *.gph
+*.stswp
 
 # Generated outputs
 outputs/tables/*
