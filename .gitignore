@@ -1,0 +1,21 @@
+# Raw and generated data
+data/raw/*.dta
+data/raw/*.csv
+data/raw/*.dat
+data/raw/*.do
+data/raw/*.xml
+data/processed/*.dta
+
+# Stata generated files
+*.smcl
+*.log
+*.gph
+
+# Generated outputs
+outputs/tables/*
+outputs/figures/*
+!outputs/tables/.gitkeep
+!outputs/figures/.gitkeep
+
+# System files
+.DS_Store
