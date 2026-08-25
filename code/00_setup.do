@@ -6,17 +6,18 @@
 clear all
 set more off
 
-* Run this file from the project folder:
-* cd "/Users/ollie1/Documents/New project/remote-work-career-project"
+* Go to the project folder first.
+* This makes the rest of the file paths work.
+cd "/Users/ollie1/Documents/New project/remote-work-career-project"
 
-capture mkdir data
-capture mkdir data/raw
-capture mkdir data/raw/remote
-capture mkdir data/processed
-capture mkdir outputs
-capture mkdir outputs/tables
-capture mkdir outputs/figures
-capture mkdir notes
+capture mkdir "data"
+capture mkdir "data/raw"
+capture mkdir "data/raw/remote"
+capture mkdir "data/processed"
+capture mkdir "outputs"
+capture mkdir "outputs/tables"
+capture mkdir "outputs/figures"
+capture mkdir "notes"
 
 di "Folders are ready."
 
