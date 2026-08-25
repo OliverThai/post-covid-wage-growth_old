@@ -1,22 +1,16 @@
-Raw data files expected by this project
-========================================
+Raw data checklist
+==================
 
-1. ACS/IPUMS labor microdata
+Put the ACS/IPUMS Stata file here:
 
-   Expected file:
-   code/usa_00001.dta
+data/raw/usa_00001.dta
 
-   Include these IPUMS variables:
-   YEAR, AGE, SEX, RACE, EDUC, EMPSTAT, OCC, IND, STATEFIP,
-   INCWAGE, UHRSWORK, WKSWORK1, PERWT.
+The cleaning script can also use this location:
 
-2. Dingel-Neiman occupation remote-workability data
+code/usa_00001.dta
 
-   Expected file:
-   data/raw/remote/occupations_workathome.csv
+Put the Dingel-Neiman remote-workability CSV here:
 
-   Run code/02_inspect_remote.do first to identify the occupation-code
-   variable and remote-workability variable. Then update the macros in
-   code/03_clean_remote.do if the automatic guesses are wrong.
+data/raw/remote/occupations_workathome.csv
 
-The scripts stop rather than fake results when these files are missing.
+The scripts will not create fake results if these files are missing.
