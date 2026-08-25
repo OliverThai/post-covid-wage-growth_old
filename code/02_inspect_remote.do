@@ -18,5 +18,5 @@ describe
 list in 1/20
 summarize
 
-di "Look for the occupation code variable and the remote-workability variable."
-di "Then edit 03_clean_remote.do if the variable names are different."
+di "This file uses onetsoccode and teleworkable."
+di "ACS uses occ, so a Census occ to SOC crosswalk is needed before merging."
