@@ -1,4 +1,4 @@
-# Remote Work and Career Advancement: Evidence from Wage Growth After COVID
+# The Remote Work Wage Premium: Post-COVID Wage Growth in Remote-Workable Occupations
 
 ## 1. Introduction
 
@@ -6,11 +6,15 @@ COVID-19 changed where many jobs could be performed. Occupations that were feasi
 
 ## 2. Data
 
-The project is designed for public IPUMS ACS or CPS labor-market microdata. The analysis uses individual-level observations with wages or earnings, hours, occupation, demographics, state, industry, and year.
+The project is designed for a public ACS/IPUMS extract saved locally as `code/usa_00001.dta`. The analysis uses individual-level observations with year, age, sex, race, education, employment status, occupation, industry, state, wage income, usual weekly hours, weeks worked, and person weights.
 
-The preferred outcome is log hourly wage. In ACS-style data, hourly wage is constructed from annual wage income, usual hours worked, and weeks worked. In CPS-style data, weekly earnings and usual hours can be used when available.
+The wage outcome is log hourly wage. Hourly wage is constructed as:
 
-Occupation-level remote-workability is measured using a public work-from-home feasibility score such as Dingel and Neiman’s occupation-level measure. A binary treatment variable identifies occupations with above-median remote-workability.
+```text
+hourly_wage = INCWAGE / (UHRSWORK x WKSWORK1)
+```
+
+Occupation-level remote-workability is measured using Dingel and Neiman's public work-from-home feasibility data, expected at `data/raw/remote/occupations_workathome.csv`. The cleaned variable `remote_workable` is merged to ACS workers by occupation.
 
 ## 3. Empirical Strategy
 
@@ -25,34 +29,45 @@ log_wage_it = beta0
             + error_it
 ```
 
-The key coefficient is `beta3`, the interaction between remote-workability and the post-COVID period. It estimates whether wages changed differently after COVID in remote-workable occupations relative to less remote-workable occupations.
+The post-COVID indicator is `post = year >= 2021`. The key coefficient is `beta3`, shown in Stata as:
 
-Controls include age, age squared, education, sex, race, state fixed effects, year fixed effects, and industry fixed effects when available. A robustness specification includes occupation fixed effects. Standard errors are clustered by occupation.
+```text
+1.remote_workable#1.post
+```
+
+Because the outcome is log hourly wage, this coefficient can be interpreted approximately as a percent wage difference. For example, a coefficient of `0.05` is roughly 5 percent.
 
 ## 4. Results Placeholder
 
-Results will be populated after the user downloads the public raw data files and runs:
+Results will be populated after the raw data files are added and the do-files are run in order:
 
 ```stata
-do code/00_master.do
+do code/00_setup.do
+do code/01_clean_acs.do
+do code/02_inspect_remote.do
+do code/03_clean_remote.do
+do code/04_merge.do
+do code/05_summary_stats.do
+do code/06_figures.do
+do code/07_regressions.do
 ```
 
-The project will produce summary statistics, wage trend figures, main regression estimates, heterogeneity estimates, and robustness checks. The sign, magnitude, and statistical significance of the remote-workability by post-period interaction will determine whether the evidence suggests faster or slower post-COVID wage growth in remote-workable occupations.
+The project will produce summary statistics, a wage trend figure, and regression output. The sign, magnitude, and statistical significance of `1.remote_workable#1.post` will determine whether the evidence suggests faster or slower post-COVID wage growth in remote-workable occupations.
 
 ## 5. Limitations
 
-This design is difference-in-differences style, but it should be interpreted cautiously. Remote-workable occupations differ from less remote-workable occupations in education, industry, skill requirements, labor demand shocks, and exposure to pandemic-era policy changes. Controls and fixed effects reduce some confounding but cannot remove all bias.
+ACS does not directly observe whether each person worked remotely. This project studies remote-workable occupations, not confirmed remote workers.
 
-Wage measures may be approximate, especially when hourly wages are constructed from annual earnings and usual schedules. Occupation-code harmonization between IPUMS data and remote-workability scores is also a central measurement challenge.
+The design is difference-in-differences style, but it should be interpreted cautiously. Remote-workable occupations differ from less remote-workable occupations in education, industry, skill requirements, labor demand shocks, and exposure to pandemic-era policy changes. Controls and fixed effects reduce some confounding but cannot remove all bias.
 
-Finally, wage growth is only a proxy for career advancement. The project does not directly observe promotions, responsibilities, internal job ladders, or within-firm mobility.
+Occupation-code harmonization is also a central measurement challenge. If Dingel-Neiman occupation codes do not match IPUMS `occ`, an occupation crosswalk may be needed before interpreting results.
 
 ## 6. Conclusion
 
-This project provides a reproducible Stata framework for studying whether remote-workable occupations experienced different wage growth after COVID. Once the public raw data are added, the project can be run from start to finish with the master do-file.
+This project provides a clean, reproducible Stata framework for studying whether remote-workable occupations experienced different wage growth after COVID. It is designed to be understandable in an interview or portfolio setting while still following an economics research workflow.
 
 ## Connection to Hybrid-Work, Turnover, and Promotion Research
 
-The project is inspired by research on hybrid work arrangements, turnover, and promotions, including Cornell-style papers such as “Balancing Turnover and Promotion Outcomes: Evidence on the Optimal Hybrid-Work Frequency.” Those studies often rely on internal firm records to observe promotion and retention outcomes directly.
+The project is inspired by research on hybrid work arrangements, turnover, and promotions, including papers such as “Balancing Turnover and Promotion Outcomes: Evidence on the Optimal Hybrid-Work Frequency.” Those studies often rely on internal firm records to observe promotion and retention outcomes directly.
 
 This project takes a different public-data approach. It cannot observe internal promotion records, so it studies wage growth as a proxy for career advancement. The advantage is transparency and reproducibility; the tradeoff is that the analysis speaks to broad labor-market wage changes rather than firm-specific promotion processes.
