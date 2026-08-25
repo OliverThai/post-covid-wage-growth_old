@@ -54,22 +54,44 @@ The ACS/IPUMS variables used are:
 YEAR
 AGE
 SEX
-RACE
 EDUC
 EMPSTAT
 OCC
 IND
-STATEFIP
+STATEICP
 INCWAGE
 UHRSWORK
 WKSWORK1
 PERWT
 ```
 
+Note: this extract does not include `RACE`, so the current regressions do not use race controls.
+
 The remote-workability data comes from Dingel and Neiman's occupation-level work-from-home feasibility file:
 
 ```text
 data/raw/remote/occupations_workathome.csv
+```
+
+The file currently has:
+
+```text
+onetsoccode
+title
+teleworkable
+```
+
+Because ACS uses Census occupation codes and Dingel-Neiman uses SOC codes, the project also needs a crosswalk:
+
+```text
+data/raw/remote/occ_soc_crosswalk.csv
+```
+
+That file should have:
+
+```text
+occ
+onetsoccode
 ```
 
 ## 4.0 Solution Strategy
@@ -82,7 +104,7 @@ Step 02. Clean ACS: Keep employed prime-age workers, create hourly wages, drop w
 
 Step 03. Inspect Remote Data: Open the Dingel-Neiman CSV and look at the variables.
 
-Step 04. Clean Remote Data: Create a simple occupation-level file with `occ` and `remote_workable`.
+Step 04. Clean Remote Data: Create a simple occupation-level file with `occ` and `remote_workable`. This step needs a Census occupation to SOC crosswalk.
 
 Step 05. Merge: Merge workers to remote-workability by occupation.
 
@@ -113,13 +135,13 @@ The main Stata regressions are:
 ```stata
 reg log_wage i.remote_workable##i.covid [pw=perwt], robust
 
-reg log_wage i.remote_workable##i.covid age age2 i.educ i.sex i.race [pw=perwt], robust
+reg log_wage i.remote_workable##i.covid age age2 i.educ i.sex [pw=perwt], robust
 
-reg log_wage i.remote_workable##i.covid age age2 i.educ i.sex i.race ///
-    i.statefip i.year [pw=perwt], robust
+reg log_wage i.remote_workable##i.covid age age2 i.educ i.sex ///
+    i.stateicp i.year [pw=perwt], robust
 
-reg log_wage i.remote_workable##i.covid age age2 i.educ i.sex i.race ///
-    i.statefip i.year i.ind [pw=perwt], robust
+reg log_wage i.remote_workable##i.covid age age2 i.educ i.sex ///
+    i.stateicp i.year i.ind [pw=perwt], robust
 ```
 
 ## 6.0 Project Structure
@@ -221,6 +243,8 @@ Log wage regressions are helpful because the results can be read approximately a
 Add `usa_00001.dta` to `data/raw/` or `code/`.
 
 Add `occupations_workathome.csv` to `data/raw/remote/`.
+
+Add an occupation crosswalk to `data/raw/remote/occ_soc_crosswalk.csv`.
 
 Run the Stata do-files in order.
 
