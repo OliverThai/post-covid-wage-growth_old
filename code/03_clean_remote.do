@@ -14,53 +14,54 @@ if _rc {
 
 import delimited "data/raw/remote/occupations_workathome.csv", clear varnames(1)
 
-* IMPORTANT:
-* After running 02_inspect_remote.do, change these names if needed.
-*
-* The final cleaned file needs:
-*   occ = occupation code
-*   remote_workable = 0/1 remote-workable occupation indicator
+* The actual Dingel-Neiman file has:
+*   onetsoccode = SOC occupation code
+*   teleworkable = 0/1 remote-workability measure
 
+rename onetsoccode soc
+rename teleworkable remote_workable
+
+keep soc remote_workable
+drop if missing(soc)
+drop if missing(remote_workable)
+duplicates drop
+
+save "data/processed/remote_soc_only.dta", replace
+
+* ACS uses Census occupation codes called occ.
+* Dingel-Neiman uses SOC codes.
+* Those codes do not match directly, so we need a crosswalk.
+capture confirm file "data/raw/remote/occ_soc_crosswalk.csv"
+if _rc {
+    di as error "The remote-workability file uses SOC codes, but ACS uses Census occ codes."
+    di as error "Add a crosswalk file here: data/raw/remote/occ_soc_crosswalk.csv"
+    di as error "The crosswalk should have two columns: occ and onetsoccode"
+    di as error "I saved data/processed/remote_soc_only.dta, but cannot create remote_clean.dta yet."
+    exit 601
+}
+
+tempfile remote_soc
+save `remote_soc'
+
+import delimited "data/raw/remote/occ_soc_crosswalk.csv", clear varnames(1)
+
+capture rename onetsoccode soc
+capture rename soccode soc
+capture rename soc_code soc
 capture rename occ_code occ
-capture rename occ2010 occ
-capture rename occupation_code occ
-
-capture rename remote_score remote_workable
-capture rename wfh_score remote_workable
-capture rename teleworkable remote_workable
-capture rename workathome remote_workable
-
-capture confirm variable occ
-if _rc {
-    di as error "Could not find occupation variable. Rename it to occ in this do-file."
-    describe
-    exit 111
-}
-
-capture confirm variable remote_workable
-if _rc {
-    di as error "Could not find remote-workability variable. Rename it to remote_workable in this do-file."
-    describe
-    exit 111
-}
-
-destring occ, replace ignore(" -.")
-destring remote_workable, replace ignore("%, ")
 
 keep if !missing(occ)
-keep if !missing(remote_workable)
+keep if !missing(soc)
 
-* If remote_workable is a 0-100 score, change it to 0-1.
-replace remote_workable = remote_workable / 100 if remote_workable > 1
-
-* If it is still a continuous score, make a simple above-median indicator.
-sum remote_workable, detail
-local median = r(p50)
-replace remote_workable = remote_workable >= `median'
+merge m:1 soc using `remote_soc'
+tab _merge
+keep if _merge == 3
+drop _merge
 
 keep occ remote_workable
 
-* Make sure there is only one row per occupation.
+* Some Census occ codes can match multiple SOC codes.
+* Take the average and turn it back into a 0/1 indicator.
 collapse (mean) remote_workable, by(occ)
 replace remote_workable = remote_workable >= .5
 
