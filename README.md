@@ -2,19 +2,19 @@
 
 ## Research Question
 
-Did workers in remote-workable occupations experience different wage growth after COVID compared with workers in less remote-workable occupations?
+Did workers in jobs that can be worked at home experience different wage growth after COVID compared with workers in jobs that cannot?
 
-This is a Stata-first reproducible economics project. It uses public labor-market data, merges workers to occupation-level remote-workability scores, estimates difference-in-differences style regressions, and produces tables, figures, and a short research summary.
+This is a Stata economics project. It uses public data, remote workability scores, creates graphs, and a research summary.
 
-## Data Sources
+## Data
 
-### Labor-Market Microdata
+### Labor Market Public Data
 
 Preferred source: [IPUMS USA](https://usa.ipums.org/usa/) ACS microdata or [IPUMS CPS](https://cps.ipums.org/cps/) CPS/ASEC microdata.
 
 Suggested ACS extract:
 
-- Years: 2015-2023, or the widest pre/post COVID span available.
+- Years: 2015-2023
 - Variables: `YEAR`, `AGE`, `SEX`, `RACE`, `EDUC` or `EDUCD`, `STATEFIP`, `OCC` or `OCC2010`, `IND`, `PERWT`, `INCWAGE`, `UHRSWORK`, and `WKSWORK1` or `WKSWORK2`.
 
 Suggested CPS extract:
