@@ -19,15 +19,16 @@ log using "outputs/tables/regressions.txt", text replace
 reg log_wage i.remote_workable##i.covid [pw=perwt], robust
 
 * 2. Add basic demographics.
-reg log_wage i.remote_workable##i.covid age age2 i.educ i.sex i.race [pw=perwt], robust
+reg log_wage i.remote_workable##i.covid age age2 i.educ i.sex [pw=perwt], robust
 
 * 3. Add state and year fixed effects.
-reg log_wage i.remote_workable##i.covid age age2 i.educ i.sex i.race ///
-    i.statefip i.year [pw=perwt], robust
+* This ACS file has stateicp instead of statefip.
+reg log_wage i.remote_workable##i.covid age age2 i.educ i.sex ///
+    i.stateicp i.year [pw=perwt], robust
 
 * 4. Add industry controls.
-reg log_wage i.remote_workable##i.covid age age2 i.educ i.sex i.race ///
-    i.statefip i.year i.ind [pw=perwt], robust
+reg log_wage i.remote_workable##i.covid age age2 i.educ i.sex ///
+    i.stateicp i.year i.ind [pw=perwt], robust
 
 log close
 
