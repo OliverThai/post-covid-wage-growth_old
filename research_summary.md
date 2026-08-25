@@ -12,6 +12,8 @@ The ACS file should be saved as `data/raw/usa_00001.dta` or `code/usa_00001.dta`
 
 The remote-workability file should be saved as `data/raw/remote/occupations_workathome.csv`.
 
+The current Dingel-Neiman file uses SOC occupation codes, while ACS uses Census `occ` codes. A crosswalk file named `data/raw/remote/occ_soc_crosswalk.csv` is needed before the merge can produce final results.
+
 ## 3. Empirical Strategy
 
 The main regression is:
