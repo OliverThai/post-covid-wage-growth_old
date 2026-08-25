@@ -1,151 +1,165 @@
-# Remote Work and Career Advancement
+# The Remote Work Wage Premium
 
-## Research Question
+## Project
 
-Did workers in jobs that can be worked at home experience different wage growth after COVID compared with workers in jobs that cannot?
+**Title:** The Remote Work Wage Premium: Post-COVID Wage Growth in Remote-Workable Occupations
 
-This is a Stata economics project. It uses public data, remote workability scores, creates graphs, and a research summary.
+**Research question:** Did workers in remote-workable occupations experience different wage growth after COVID compared to workers in less remote-workable occupations?
 
-## Data
+This is an independent economic consulting-style research project built in Stata. The project uses public ACS/IPUMS labor-market data and Dingel-Neiman occupation-level work-from-home feasibility data.
 
-### Labor Market Public Data
-
-Preferred source: [IPUMS USA](https://usa.ipums.org/usa/) ACS microdata or [IPUMS CPS](https://cps.ipums.org/cps/) CPS/ASEC microdata.
-
-Suggested ACS extract:
-
-- Years: 2015-2023
-- Variables: `YEAR`, `AGE`, `SEX`, `RACE`, `EDUC` or `EDUCD`, `STATEFIP`, `OCC` or `OCC2010`, `IND`, `PERWT`, `INCWAGE`, `UHRSWORK`, and `WKSWORK1` or `WKSWORK2`.
-
-Suggested CPS extract:
-
-- Years: pre- and post-COVID CPS ASEC or basic monthly data.
-- Variables: `YEAR`, `AGE`, `SEX`, `RACE`, `EDUC` or `EDUCD`, `STATEFIP`, `OCC` or `OCC2010`, `IND`, `PERWT`, `EARNWEEK`, `UHRSWORKT`, and other wage/hours variables available in your extract.
-
-Save the file as one of:
+## Folder Structure
 
 ```text
-data/raw/ipums_labor.dta
-data/raw/ipums_labor.csv
+code/
+data/
+data/raw/
+data/raw/remote/
+data/processed/
+outputs/
+outputs/tables/
+outputs/figures/
+notes/
 ```
 
-### Remote-Workability Scores
+## Data Sources
 
-Preferred source: Dingel and Neiman, “How Many Jobs Can be Done at Home?”, replication package:
+### ACS/IPUMS
 
-[https://github.com/jdingel/DingelNeiman-workathome](https://github.com/jdingel/DingelNeiman-workathome)
-
-Create a harmonized score file named:
+The main labor-market dataset is an ACS extract from IPUMS. The expected file is:
 
 ```text
-data/raw/remote_work_scores.csv
+code/usa_00001.dta
 ```
 
-Required columns:
+The selected IPUMS variables are:
 
-- `occ_code`: occupation code matching the IPUMS occupation code.
-- `remote_score`: remote-workability score from 0 to 1. A 0-100 score is also accepted and rescaled.
+```text
+YEAR
+AGE
+SEX
+RACE
+EDUC
+EMPSTAT
+OCC
+IND
+STATEFIP
+INCWAGE
+UHRSWORK
+WKSWORK1
+PERWT
+```
 
-Accepted alternatives:
+### Dingel-Neiman Remote-Workability Data
 
-- Occupation code: `occ_code`, `occ2010`, or `occ`.
-- Score: `remote_score`, `wfh_score`, or `teleworkable`.
+The remote-workability source is Dingel and Neiman's occupation-level work-from-home feasibility data. The expected raw file is:
 
-Important: Dingel-Neiman files are often SOC-based, while IPUMS ACS/CPS may use Census occupation codes. If the merge rate is poor, add a public SOC-to-Census occupation crosswalk and create `remote_work_scores.csv` at the same occupation level as the IPUMS extract.
+```text
+data/raw/remote/occupations_workathome.csv
+```
+
+The cleaned version is saved as:
+
+```text
+data/processed/remote_clean.dta
+```
+
+## Key Variable Construction
+
+The project constructs hourly wages as:
+
+```text
+hourly_wage = INCWAGE / (UHRSWORK x WKSWORK1)
+```
+
+Then it constructs:
+
+```text
+log_wage = log(hourly_wage)
+post = year >= 2021
+age2 = age^2
+```
+
+The treatment variable is:
+
+```text
+remote_workable
+```
+
+This comes from the Dingel-Neiman occupation-level data. In the final merged data, it indicates whether an occupation is classified as remote-workable.
+
+## Method
+
+The project uses a difference-in-differences style comparison of wage growth in remote-workable versus less remote-workable occupations before and after COVID.
+
+The core regression is:
+
+```stata
+reg log_wage i.remote_workable##i.post [pw=perwt], robust
+```
+
+The main coefficient of interest is:
+
+```text
+1.remote_workable#1.post
+```
+
+Because the outcome is log hourly wage, this coefficient can be interpreted approximately as a percent wage difference. For example, a coefficient of `0.05` is roughly a 5 percent difference.
 
 ## How to Run
 
-Open Stata, change directory to the project folder, and run:
+Open Stata and set the working directory to the project folder:
 
 ```stata
-cd "path/to/remote-work-career-project"
-do code/00_master.do
+cd "/Users/ollie1/Documents/New project/remote-work-career-project"
 ```
 
-The master file runs the full workflow:
-
-1. setup and package checks,
-2. labor data cleaning,
-3. remote-workability score cleaning,
-4. merge,
-5. summary statistics,
-6. regressions,
-7. figures.
-
-If raw files are missing, the scripts stop with a clear error message and do not create fake results.
-
-## Empirical Strategy
-
-The main regression is:
-
-```text
-log_wage_it = beta0
-            + beta1 remote_workable_i
-            + beta2 post_t
-            + beta3 remote_workable_i * post_t
-            + controls
-            + error_it
-```
-
-The main Stata specification is:
+Then run the do-files in order:
 
 ```stata
-reg log_wage i.remote_workable##i.post2020 c.age c.age2 ///
-    i.educ i.sex i.race i.statefip i.year i.ind [pw=weight], ///
-    vce(cluster occ_code)
+do code/00_setup.do
+do code/01_clean_acs.do
+do code/02_inspect_remote.do
+do code/03_clean_remote.do
+do code/04_merge.do
+do code/05_summary_stats.do
+do code/06_figures.do
+do code/07_regressions.do
 ```
 
-The key coefficient is:
+## Output Files
+
+Cleaned data:
 
 ```text
-1.remote_workable#1.post2020
+data/processed/acs_clean.dta
+data/processed/remote_clean.dta
+data/processed/analysis_data.dta
 ```
 
-This coefficient estimates whether wages changed differently after COVID for workers in remote-workable occupations compared with workers in less remote-workable occupations, conditional on the included controls and fixed effects.
-
-## Outputs
-
-Tables are saved to:
+Tables:
 
 ```text
-outputs/tables/
+outputs/tables/summary_overall.csv
+outputs/tables/summary_by_remote.csv
+outputs/tables/regression_results.txt
+outputs/tables/regression_table.rtf
 ```
 
-Figures are saved to:
+Figures:
 
 ```text
-outputs/figures/
+outputs/figures/wage_trends.png
 ```
 
-Expected outputs:
+## Important Limitation
 
-- `summary_stats_overall.csv`
-- `summary_stats_by_remote.csv`
-- `main_regression_table.rtf` if `esttab` is available
-- `heterogeneity_table.rtf` if `esttab` is available
-- stored Stata estimates as `.ster`
-- wage trend figures as `.png` and `.pdf`
+ACS does not directly show whether each person worked remotely. This project studies workers in remote-workable occupations, not confirmed remote workers.
 
-## Heterogeneity and Robustness
+Also, Dingel-Neiman occupation codes may not automatically match IPUMS `occ`. The merge script reports match quality. If the match rate is low, an occupation crosswalk may be needed before interpreting results.
 
-The regression script includes:
+## Connection to Hybrid-Work Research
 
-- college vs non-college workers,
-- younger vs older workers,
-- women vs men,
-- continuous remote-workability score,
-- post-2020 and post-2021 definitions,
-- prime-age restriction, ages 25-54.
+This project is inspired by research on hybrid work, turnover, and promotions, including papers such as “Balancing Turnover and Promotion Outcomes: Evidence on the Optimal Hybrid-Work Frequency.” Those studies often use internal firm data to observe promotions and retention directly.
 
-## Connection to Hybrid-Work and Promotion Research
-
-This project is inspired by papers on hybrid work, turnover, and promotions, including Cornell-style work such as “Balancing Turnover and Promotion Outcomes: Evidence on the Optimal Hybrid-Work Frequency.” Those papers often use internal firm data to study promotions and retention directly.
-
-This project uses public labor-market data instead. It studies wage growth as a proxy for career advancement rather than internal firm promotions. That makes the analysis reproducible with public data, but it also means the results should be interpreted as evidence on broad wage changes, not direct promotion outcomes.
-
-## Research Notes
-
-- The scripts are conservative: they stop when required raw data are missing.
-- The occupation-code merge is the main practical challenge.
-- ACS hourly wages constructed from annual earnings, usual hours, and weeks worked are approximate.
-- For a polished paper, refine the sample to wage and salary workers and document any wage trimming choices.
+This project uses public labor-market data instead. It studies wage growth as a proxy for career advancement rather than internal firm promotions. The advantage is that the project is reproducible with public data; the tradeoff is that it cannot directly measure promotions inside firms.
