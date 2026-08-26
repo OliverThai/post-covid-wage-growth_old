@@ -1,7 +1,5 @@
-********************************************************************************
 * 02_analysis.do
 * Summary stats, regressions, and data for R figures
-********************************************************************************
 
 clear all
 set more off
@@ -11,9 +9,7 @@ cd "$project"
 
 use "data/processed/analysis_data.dta", clear
 
-********************************************************************************
 * Summary statistics
-********************************************************************************
 
 log using "outputs/tables/summary_stats.txt", text replace
 
@@ -26,9 +22,7 @@ tab covid remote_workable
 
 log close
 
-********************************************************************************
 * Make a small file for the R figure script
-********************************************************************************
 
 preserve
 
@@ -38,9 +32,7 @@ export delimited using "data/processed/wage_trends_for_r.csv", replace
 
 restore
 
-********************************************************************************
 * Regressions
-********************************************************************************
 
 log using "outputs/tables/regressions.txt", text replace
 
@@ -61,9 +53,7 @@ reg log_wage i.remote_workable##i.covid age age2 i.educ i.sex ///
 
 log close
 
-********************************************************************************
 * Figures in R
-********************************************************************************
 
 * This runs the R figure script if R is installed.
 * If it does not work inside Stata, run this in Terminal:
