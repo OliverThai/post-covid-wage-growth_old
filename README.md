@@ -96,23 +96,13 @@ onetsoccode
 
 ## 4.0 Solution Strategy
 
-The project is split into small Stata do-files so each step is easy to understand.
+The project is split into three Stata do-files so it stays easy to follow without having too many separate files.
 
-Step 01. Setup: Create folders and check whether the raw files exist.
+Step 01. Setup: Create the project folders.
 
-Step 02. Clean ACS: Keep employed prime-age workers, create hourly wages, drop wage outliers using two standard deviations from the mean, create `covid`, `log_wage`, and `age2`, then save the cleaned data.
+Step 02. Build Data: Clean the ACS data, clean the remote-workability data, use the crosswalk, and merge everything into one analysis dataset.
 
-Step 03. Inspect Remote Data: Open the Dingel-Neiman CSV and look at the variables.
-
-Step 04. Clean Remote Data: Create a simple occupation-level file with `occ` and `remote_workable`. This step needs a Census occupation to SOC crosswalk.
-
-Step 05. Merge: Merge workers to remote-workability by occupation.
-
-Step 06. Summary Stats: Create basic summary statistics.
-
-Step 07. Figures: Create a wage trend graph.
-
-Step 08. Regressions: Run the main difference-in-differences style regressions.
+Step 03. Analysis: Create summary stats, make the wage trend graph, and run the regressions.
 
 ## 5.0 Method
 
@@ -170,13 +160,8 @@ Then run the files in order:
 
 ```stata
 do code/00_setup.do
-do code/01_clean_acs.do
-do code/02_inspect_remote.do
-do code/03_clean_remote.do
-do code/04_merge.do
-do code/05_summary_stats.do
-do code/06_figures.do
-do code/07_regressions.do
+do code/01_build_data.do
+do code/02_analysis.do
 ```
 
 ## 8.0 Expected Outputs
@@ -246,7 +231,7 @@ Add `occupations_workathome.csv` to `data/raw/remote/`.
 
 Add an occupation crosswalk to `data/raw/remote/occ_soc_crosswalk.csv`.
 
-Run the Stata do-files in order.
+Run the three Stata do-files in order.
 
 Check the merge results from `tab _merge`.
 
