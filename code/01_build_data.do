@@ -1,7 +1,5 @@
-********************************************************************************
 * 01_build_data.do
 * Clean ACS, clean remote-work data, and merge everything together
-********************************************************************************
 
 clear all
 set more off
@@ -9,9 +7,7 @@ set more off
 global project "/Users/ollie1/Documents/New project/remote-work-career-project"
 cd "$project"
 
-********************************************************************************
 * Clean ACS/IPUMS data
-********************************************************************************
 
 use "data/raw/usa_00001.dta", clear
 
@@ -43,9 +39,7 @@ tab covid
 
 save "data/processed/cleaned.dta", replace
 
-********************************************************************************
 * Clean Dingel-Neiman remote-workability data
-********************************************************************************
 
 import delimited "data/raw/remote/occupations_workathome.csv", clear varnames(1)
 
@@ -59,9 +53,7 @@ duplicates drop
 
 save "data/processed/remote_soc_only.dta", replace
 
-********************************************************************************
 * Crosswalk SOC codes to ACS occupation codes
-********************************************************************************
 
 * The Dingel-Neiman file uses SOC codes.
 * The ACS file uses Census occupation codes called occ.
@@ -86,9 +78,7 @@ replace remote_workable = remote_workable >= .5
 
 save "data/processed/remote_clean.dta", replace
 
-********************************************************************************
 * Merge ACS with remote-workability data
-********************************************************************************
 
 use "data/processed/cleaned.dta", clear
 
