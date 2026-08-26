@@ -96,13 +96,15 @@ onetsoccode
 
 ## 4.0 Solution Strategy
 
-The project is split into three Stata do-files so it stays easy to follow without having too many separate files.
+The project mostly uses Stata, with one small R file for nicer figures.
 
 Step 01. Setup: Create the project folders.
 
 Step 02. Build Data: Clean the ACS data, clean the remote-workability data, use the crosswalk, and merge everything into one analysis dataset.
 
-Step 03. Analysis: Create summary stats, make the wage trend graph, and run the regressions.
+Step 03. Analysis: Create summary stats, run the regressions, and export a small wage-trend file.
+
+Step 04. Figures: R reads the wage-trend file and saves the graphs.
 
 ## 5.0 Method
 
@@ -164,6 +166,12 @@ do code/01_build_data.do
 do code/02_analysis.do
 ```
 
+The last Stata file tries to run the R figure script automatically. If that does not work inside Stata, run this in Terminal:
+
+```text
+Rscript code/03_figures.R
+```
+
 ## 8.0 Expected Outputs
 
 Cleaned data:
@@ -172,6 +180,7 @@ Cleaned data:
 data/processed/cleaned.dta
 data/processed/remote_clean.dta
 data/processed/analysis_data.dta
+data/processed/wage_trends_for_r.csv
 ```
 
 Tables/logs:
@@ -185,6 +194,7 @@ Figure:
 
 ```text
 outputs/figures/wage_trends.png
+outputs/figures/log_wage_trends.png
 ```
 
 ## 9.0 Results
