@@ -32,7 +32,7 @@ Since the outcome is log hourly wage, this coefficient is roughly a percent wage
 
 ## 4. Results Placeholder
 
-Results will be added after the raw data files are placed in the project and the Stata do-files are run.
+Results will be added after the raw data files are placed in the project and the three Stata do-files are run.
 
 ## 5. Limitations
 
