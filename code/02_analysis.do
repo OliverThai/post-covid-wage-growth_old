@@ -1,6 +1,6 @@
 ********************************************************************************
 * 02_analysis.do
-* Summary stats, figure, and regressions
+* Summary stats, regressions, and data for R figures
 ********************************************************************************
 
 clear all
@@ -27,22 +27,14 @@ tab covid remote_workable
 log close
 
 ********************************************************************************
-* Wage trend figure
+* Make a small file for the R figure script
 ********************************************************************************
 
 preserve
 
-collapse (mean) hourly_wage [pw=perwt], by(year remote_workable)
+collapse (mean) hourly_wage log_wage [pw=perwt], by(year remote_workable)
 
-twoway ///
-    (line hourly_wage year if remote_workable == 1, lcolor(blue)) ///
-    (line hourly_wage year if remote_workable == 0, lcolor(red)), ///
-    title("Wage Trends by Remote-Workability") ///
-    xtitle("Year") ///
-    ytitle("Average hourly wage") ///
-    legend(order(1 "Remote-workable" 2 "Less remote-workable"))
-
-graph export "outputs/figures/wage_trends.png", replace
+export delimited using "data/processed/wage_trends_for_r.csv", replace
 
 restore
 
@@ -68,5 +60,15 @@ reg log_wage i.remote_workable##i.covid age age2 i.educ i.sex ///
     i.stateicp i.year i.ind [pw=perwt], robust
 
 log close
+
+********************************************************************************
+* Figures in R
+********************************************************************************
+
+* This runs the R figure script if R is installed.
+* If it does not work inside Stata, run this in Terminal:
+* Rscript code/03_figures.R
+
+capture noisily shell Rscript "code/03_figures.R"
 
 di "Analysis complete."
