@@ -1,8 +1,6 @@
 # The Remote Work Wage Premium
 
-A Stata economics project studying post-COVID wage growth in remote-workable occupations.
-
-# The Remote Work Wage Premium
+A Stata economics project studying post covid-19 wage growth in remote-workable occupations.
 
 ## 1.0 Research Problem
 
