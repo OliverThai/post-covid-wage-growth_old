@@ -20,6 +20,10 @@ keep if !missing(incwage) & incwage > 0
 keep if !missing(wkswork1) & wkswork1 > 0
 keep if !missing(uhrswork) & uhrswork > 0
 
+gen soc = trim(occsoc)
+drop if soc == "" | soc == "0" | soc == "000000"
+drop if strpos(soc, "X") > 0
+
 gen hourly_wage = incwage / (uhrswork * wkswork1)
 
 sum hourly_wage
@@ -46,43 +50,23 @@ import delimited "data/raw/remote/occupations_workathome.csv", clear varnames(1)
 rename onetsoccode soc
 rename teleworkable remote_workable
 
+replace soc = subinstr(soc, "-", "", .)
+replace soc = subinstr(soc, ".", "", .)
+replace soc = substr(soc, 1, 6)
+
 keep soc remote_workable
 drop if missing(soc)
 drop if missing(remote_workable)
-duplicates drop
+collapse (mean) remote_score=remote_workable, by(soc)
+gen remote_workable = remote_score >= .5
 
 save "data/processed/remote_soc_only.dta", replace
-
-* Crosswalk SOC codes to ACS occupation codes
-
-* The Dingel-Neiman file uses SOC codes.
-* The ACS file uses Census occupation codes called occ.
-* This file must have: occ and onetsoccode.
-
-import delimited "data/raw/remote/occ_soc_crosswalk.csv", clear varnames(1)
-
-rename onetsoccode soc
-
-keep occ soc
-drop if missing(occ)
-drop if missing(soc)
-
-merge m:1 soc using "data/processed/remote_soc_only.dta"
-tab _merge
-
-keep if _merge == 3
-drop _merge
-
-collapse (mean) remote_workable, by(occ)
-replace remote_workable = remote_workable >= .5
-
-save "data/processed/remote_clean.dta", replace
 
 * Merge ACS with remote-workability data
 
 use "data/processed/cleaned.dta", clear
 
-merge m:1 occ using "data/processed/remote_clean.dta"
+merge m:1 soc using "data/processed/remote_soc_only.dta"
 tab _merge
 
 keep if _merge == 3
