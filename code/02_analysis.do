@@ -45,10 +45,13 @@ reg log_wage i.remote_workable##i.covid [pw=perwt], robust
 
 reg log_wage i.remote_workable##i.covid age age2 i.educ i.sex [pw=perwt], robust
 
-reg log_wage i.remote_workable##i.covid age age2 i.educ i.sex ///
+reg log_wage i.remote_workable##i.covid age age2 i.educ i.sex i.race ///
     i.stateicp i.year [pw=perwt], robust
 
-reg log_wage i.remote_workable##i.covid age age2 i.educ i.sex ///
+reg log_wage i.remote_workable##i.covid age age2 i.educ i.sex i.race ///
+    i.stateicp i.year i.ind [pw=perwt], robust
+
+reg log_wage c.remote_score##i.covid age age2 i.educ i.sex i.race ///
     i.stateicp i.year i.ind [pw=perwt], robust
 
 log close
