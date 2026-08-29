@@ -1,6 +1,8 @@
 # The Remote Work Wage Premium
 
-A Stata economics project studying post covid-19 wage growth in remote-workable occupations.
+A Stata economics project studying post-COVID wage growth in remote-workable occupations.
+
+# The Remote Work Wage Premium
 
 ## 1.0 Research Problem
 
@@ -40,21 +42,17 @@ The main worker-level data comes from ACS/IPUMS. The expected file is:
 data/raw/usa_00001.dta
 ```
 
-If the file is already in the code folder, the cleaning script can also read:
-
-```text
-code/usa_00001.dta
-```
-
 The ACS/IPUMS variables used are:
 
 ```text
 YEAR
 AGE
 SEX
+RACE
 EDUC
 EMPSTAT
 OCC
+OCCSOC
 IND
 STATEICP
 INCWAGE
@@ -63,7 +61,7 @@ WKSWORK1
 PERWT
 ```
 
-Note: this extract does not include `RACE`, so the current regressions do not use race controls.
+The important occupation variable is `OCCSOC`, because it lets the project merge ACS occupations directly with the Dingel-Neiman remote-workability file.
 
 The remote-workability data comes from Dingel and Neiman's occupation-level work-from-home feasibility file:
 
@@ -79,18 +77,7 @@ title
 teleworkable
 ```
 
-Because ACS uses Census occupation codes and Dingel-Neiman uses SOC codes, the project also needs a crosswalk:
-
-```text
-data/raw/remote/occ_soc_crosswalk.csv
-```
-
-That file should have:
-
-```text
-occ
-onetsoccode
-```
+The Stata code cleans `onetsoccode` into the same six-digit SOC format as `OCCSOC`, then merges the files.
 
 ## 4.0 Solution Strategy
 
@@ -98,7 +85,7 @@ The project mostly uses Stata, with one small R file for nicer figures.
 
 Step 01. Setup: Create the project folders.
 
-Step 02. Build Data: Clean the ACS data, clean the remote-workability data, use the crosswalk, and merge everything into one analysis dataset.
+Step 02. Build Data: Clean the ACS data, clean the remote-workability data, and merge everything into one analysis dataset.
 
 Step 03. Analysis: Create summary stats, run the regressions, and export a small wage-trend file.
 
@@ -128,10 +115,13 @@ reg log_wage i.remote_workable##i.covid [pw=perwt], robust
 reg log_wage i.remote_workable##i.covid age age2 i.educ i.sex [pw=perwt], robust
 
 reg log_wage i.remote_workable##i.covid age age2 i.educ i.sex ///
-    i.stateicp i.year [pw=perwt], robust
+    i.race i.stateicp i.year [pw=perwt], robust
 
 reg log_wage i.remote_workable##i.covid age age2 i.educ i.sex ///
-    i.stateicp i.year i.ind [pw=perwt], robust
+    i.race i.stateicp i.year i.ind [pw=perwt], robust
+
+reg log_wage c.remote_score##i.covid age age2 i.educ i.sex ///
+    i.race i.stateicp i.year i.ind [pw=perwt], robust
 ```
 
 ## 6.0 Project Structure
@@ -176,7 +166,7 @@ Cleaned data:
 
 ```text
 data/processed/cleaned.dta
-data/processed/remote_clean.dta
+data/processed/remote_soc_only.dta
 data/processed/analysis_data.dta
 data/processed/wage_trends_for_r.csv
 ```
@@ -197,7 +187,7 @@ outputs/figures/log_wage_trends.png
 
 ## 9.0 Results
 
-Results are not filled in yet because the raw ACS/IPUMS file and Dingel-Neiman CSV need to be added first.
+Results are not filled in yet because the Stata do-files still need to be run.
 
 The main result will come from:
 
@@ -215,7 +205,7 @@ ACS does not directly measure whether each person worked remotely.
 
 The project assigns remote-workability by occupation, so it compares types of jobs instead of actual remote-work status.
 
-The Dingel-Neiman occupation codes may not perfectly match IPUMS `occ`, so the merge needs to be checked carefully.
+The Dingel-Neiman occupation codes may not perfectly match every IPUMS `OCCSOC` code, so the merge needs to be checked carefully.
 
 ## 11.0 Connection to Hybrid-Work Research
 
@@ -233,11 +223,9 @@ Log wage regressions are helpful because the results can be read approximately a
 
 ## 13.0 Next Steps
 
-Add `usa_00001.dta` to `data/raw/` or `code/`.
+Add `usa_00001.dta` to `data/raw/`.
 
 Add `occupations_workathome.csv` to `data/raw/remote/`.
-
-Add an occupation crosswalk to `data/raw/remote/occ_soc_crosswalk.csv`.
 
 Run the three Stata do-files in order.
 
