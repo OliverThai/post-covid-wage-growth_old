@@ -8,11 +8,11 @@ This project studies whether workers in remote-workable occupations had differen
 
 The project uses ACS/IPUMS worker-level data and Dingel-Neiman occupation-level remote-workability data.
 
-The ACS file should be saved as `data/raw/usa_00001.dta` or `code/usa_00001.dta`.
+The ACS file should be saved as `data/raw/usa_00001.dta`.
 
 The remote-workability file should be saved as `data/raw/remote/occupations_workathome.csv`.
 
-The current Dingel-Neiman file uses SOC occupation codes, while ACS uses Census `occ` codes. A crosswalk file named `data/raw/remote/occ_soc_crosswalk.csv` is needed before the merge can produce final results.
+The ACS extract includes `OCCSOC`, so the project can merge worker occupations directly with the Dingel-Neiman SOC occupation file.
 
 ## 3. Empirical Strategy
 
@@ -38,7 +38,7 @@ Results will be added after the raw data files are placed in the project and the
 
 ACS does not directly show whether a person worked remotely. The project measures whether the person's occupation is remote-workable.
 
-The occupation merge may require a crosswalk if Dingel-Neiman occupation codes do not match IPUMS `occ`.
+The occupation merge may miss some observations if Dingel-Neiman occupation codes do not match every IPUMS `OCCSOC` code.
 
 ## 6. Conclusion
 
