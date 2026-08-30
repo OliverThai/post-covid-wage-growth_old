@@ -58,10 +58,9 @@ log close
 
 * Figures in R
 
-* This runs the R figure script if R is installed.
-* If it does not work inside Stata, run this in Terminal:
-* Rscript code/03_figures.R
+* This runs the R figure script.
+* The full Rscript path is used because Stata may not know where R is on Mac.
 
-capture noisily shell Rscript "code/03_figures.R"
+shell "/usr/local/bin/Rscript" "code/03_figures.R" "$project"
 
 di "Analysis complete."
