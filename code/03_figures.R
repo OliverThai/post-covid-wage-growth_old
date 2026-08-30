@@ -1,7 +1,13 @@
 # 03_figures.R
 # Make project figures from the small CSV created by Stata.
 
-project <- getwd()
+args <- commandArgs(trailingOnly = TRUE)
+
+if (length(args) >= 1) {
+  project <- args[1]
+} else {
+  project <- getwd()
+}
 
 trend_file <- file.path(project, "data", "processed", "wage_trends_for_r.csv")
 figure_folder <- file.path(project, "outputs", "figures")
