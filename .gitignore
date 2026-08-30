@@ -11,12 +11,14 @@ data/raw/**/*.dat
 data/raw/**/*.do
 data/raw/**/*.xml
 data/processed/*.dta
+data/processed/*.csv
 
 # Stata generated files
 *.smcl
 *.log
 *.gph
 *.stswp
+.Rapp.history
 
 # Generated outputs
 outputs/tables/*
