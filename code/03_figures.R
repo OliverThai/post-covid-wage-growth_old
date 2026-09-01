@@ -23,6 +23,27 @@ industry <- read.csv("data/processed/industry_trends_for_r.csv")
 state <- read.csv("data/processed/state_trends_for_r.csv")
 ineq <- read.csv("data/processed/inequality_trends_for_r.csv")
 
+state_names <- data.frame(
+  stateicp = c(1, 2, 3, 4, 5, 6, 11, 12, 13, 14,
+    21, 22, 23, 24, 25, 31, 32, 33, 34, 35,
+    36, 37, 40, 41, 42, 43, 44, 45, 46, 47,
+    48, 49, 51, 52, 53, 54, 56, 61, 62, 63,
+    64, 65, 66, 67, 68, 71, 72, 73, 81, 82,
+    83, 98),
+  state_name = c("Connecticut", "Maine", "Massachusetts", "New Hampshire",
+    "Rhode Island", "Vermont", "Delaware", "New Jersey", "New York",
+    "Pennsylvania", "Illinois", "Indiana", "Michigan", "Ohio", "Wisconsin",
+    "Iowa", "Kansas", "Minnesota", "Missouri", "Nebraska", "North Dakota",
+    "South Dakota", "Virginia", "Alabama", "Arkansas", "Florida", "Georgia",
+    "Louisiana", "Mississippi", "North Carolina", "South Carolina", "Texas",
+    "Kentucky", "Maryland", "Oklahoma", "Tennessee", "West Virginia",
+    "Arizona", "Colorado", "Idaho", "Montana", "Nevada", "New Mexico",
+    "Utah", "Wyoming", "California", "Oregon", "Washington", "Alaska",
+    "Hawaii", "Puerto Rico", "District of Columbia")
+)
+
+state <- merge(state, state_names, by = "stateicp")
+
 overall$group <- "All workers"
 
 remote$group <- ifelse(remote$remote_workable == 1,
@@ -183,33 +204,36 @@ p8 <- ggplot(top_industry, aes(x = reorder(ind, wage_growth), y = wage_growth)) 
 ggsave("outputs/figures/top_industry_growth.png", p8, width = 8, height = 5, dpi = 300)
 
 state$period <- ifelse(state$year > 2020, "Post-COVID", "Pre-COVID")
-state_avg <- aggregate(hourly_wage ~ stateicp + period, data = state, FUN = mean)
+state_avg <- aggregate(hourly_wage ~ stateicp + state_name + period, data = state, FUN = mean)
 
 state_pre <- subset(state_avg, period == "Pre-COVID")
 state_post <- subset(state_avg, period == "Post-COVID")
 
-names(state_pre)[3] <- "pre_wage"
-names(state_post)[3] <- "post_wage"
+names(state_pre)[4] <- "pre_wage"
+names(state_post)[4] <- "post_wage"
 
 state_growth <- merge(
-  state_pre[, c("stateicp", "pre_wage")],
-  state_post[, c("stateicp", "post_wage")],
+  state_pre[, c("stateicp", "state_name", "pre_wage")],
+  state_post[, c("stateicp", "state_name", "post_wage")],
   by = "stateicp"
 )
+
+state_growth$state_name <- state_growth$state_name.x
+state_growth$state_name.x <- NULL
+state_growth$state_name.y <- NULL
 
 state_growth$wage_growth <- state_growth$post_wage - state_growth$pre_wage
 state_growth <- state_growth[order(-state_growth$wage_growth), ]
 top_state_growth <- head(state_growth, 15)
-top_state_growth$stateicp <- as.character(top_state_growth$stateicp)
 
 write.csv(top_state_growth, "outputs/tables/top_state_growth.csv", row.names = FALSE)
 
-p9 <- ggplot(top_state_growth, aes(x = reorder(stateicp, wage_growth), y = wage_growth)) +
+p9 <- ggplot(top_state_growth, aes(x = reorder(state_name, wage_growth), y = wage_growth)) +
   geom_col(fill = "#16a34a") +
   coord_flip() +
   labs(
     title = "States With the Biggest Wage Growth After COVID",
-    x = "State code",
+    x = "State",
     y = "Post-COVID wage growth"
   ) +
   theme_minimal()
@@ -217,20 +241,19 @@ p9 <- ggplot(top_state_growth, aes(x = reorder(stateicp, wage_growth), y = wage_
 ggsave("outputs/figures/top_state_growth.png", p9, width = 8, height = 5, dpi = 300)
 
 state_level <- subset(state, year > 2020)
-state_level <- aggregate(hourly_wage ~ stateicp, data = state_level, FUN = mean)
-names(state_level)[2] <- "post_covid_wage"
+state_level <- aggregate(hourly_wage ~ stateicp + state_name, data = state_level, FUN = mean)
+names(state_level)[3] <- "post_covid_wage"
 state_level <- state_level[order(-state_level$post_covid_wage), ]
 top_state_level <- head(state_level, 15)
-top_state_level$stateicp <- as.character(top_state_level$stateicp)
 
 write.csv(top_state_level, "outputs/tables/top_state_wage_levels.csv", row.names = FALSE)
 
-p10 <- ggplot(top_state_level, aes(x = reorder(stateicp, post_covid_wage), y = post_covid_wage)) +
+p10 <- ggplot(top_state_level, aes(x = reorder(state_name, post_covid_wage), y = post_covid_wage)) +
   geom_col(fill = "#7c3aed") +
   coord_flip() +
   labs(
     title = "States With the Highest Post-COVID Wage Levels",
-    x = "State code",
+    x = "State",
     y = "Average post-COVID hourly wage"
   ) +
   theme_minimal()
