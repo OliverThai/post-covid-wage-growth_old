@@ -36,6 +36,14 @@ gen covid = year > 2020
 gen log_wage = log(hourly_wage)
 gen age2 = age^2
 
+gen age_group = .
+replace age_group = 1 if age >= 25 & age <= 34
+replace age_group = 2 if age >= 35 & age <= 44
+replace age_group = 3 if age >= 45 & age <= 54
+
+label define age_group_label 1 "25-34" 2 "35-44" 3 "45-54"
+label values age_group age_group_label
+
 count
 sum hourly_wage log_wage age
 tab year
