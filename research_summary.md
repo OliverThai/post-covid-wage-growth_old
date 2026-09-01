@@ -2,7 +2,7 @@
 
 ## 1. Introduction
 
-This project studies how wages changed after COVID and whether those changes differed by race, age, and occupation remote-workability.
+This project studies how wages changed after COVID and whether those changes differed by race, age, gender, education, industry, state, and occupation remote-workability.
 
 ## 2. Data
 
@@ -36,7 +36,7 @@ The main coefficient is:
 
 Since the outcome is log hourly wage, this coefficient is roughly a percent wage difference.
 
-The project also compares post-COVID wage changes across race and age groups.
+The project also compares post-COVID wage changes across race, age, gender, education, industry, and state groups. It also includes a simple wage-inequality graph using the gap between high-wage and low-wage workers.
 
 ## 4. Results Placeholder
 
