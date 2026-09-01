@@ -22,11 +22,14 @@ For the remote-work part, the project studies remote-workable occupations, not c
 
 Remote-workability is measured at the occupation level using Dingel-Neiman work-from-home feasibility data.
 
-Hourly wage is created as:
+The main wage outcome is annual wage income:
 
 ```text
-hourly_wage = INCWAGE / (UHRSWORK x WKSWORK1)
+annual_wage = INCWAGE
+log_wage = log(annual_wage)
 ```
+
+The project uses annual wage income instead of hourly wage because `WKSWORK1` is missing for 2016-2018 in the current ACS extract. Using `INCWAGE` keeps the full set of years in the graphs and regressions.
 
 The COVID/post period variable is:
 
@@ -58,8 +61,6 @@ OCCSOC
 IND
 STATEICP
 INCWAGE
-UHRSWORK
-WKSWORK1
 PERWT
 ```
 
@@ -101,7 +102,7 @@ The first regression idea is:
 log_wage = covid + controls
 ```
 
-The coefficient on `covid` shows the average post-COVID wage difference, after controls.
+The coefficient on `covid` shows the average post-COVID annual wage-income difference, after controls.
 
 The remote-workability regression idea is:
 
@@ -115,7 +116,7 @@ The main coefficient to look at is:
 1.remote_workable#1.covid
 ```
 
-Because the outcome is log wage, a coefficient of `0.05` is about a 5 percent wage difference.
+Because the outcome is log annual wage income, a coefficient of `0.05` is about a 5 percent wage-income difference.
 
 The main Stata regressions are:
 
