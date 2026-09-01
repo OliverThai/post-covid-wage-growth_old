@@ -34,7 +34,7 @@ The main coefficient is:
 1.remote_workable#1.covid
 ```
 
-Since the outcome is log hourly wage, this coefficient is roughly a percent wage difference.
+Since the outcome is log annual wage income, this coefficient is roughly a percent wage-income difference.
 
 The project also compares post-COVID wage changes across race, age, gender, education, industry, and state groups. It also includes a simple wage-inequality graph using the gap between high-wage and low-wage workers.
 
