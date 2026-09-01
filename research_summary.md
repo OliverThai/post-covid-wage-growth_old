@@ -1,8 +1,8 @@
-# The Remote Work Wage Premium: Post-COVID Wage Growth in Remote-Workable Occupations
+# Wage Growth After COVID
 
 ## 1. Introduction
 
-This project studies whether workers in remote-workable occupations had different wage growth after COVID compared to workers in less remote-workable occupations.
+This project studies how wages changed after COVID and whether those changes differed by race, age, and occupation remote-workability.
 
 ## 2. Data
 
@@ -12,11 +12,17 @@ The ACS file should be saved as `data/raw/usa_00001.dta`.
 
 The remote-workability file should be saved as `data/raw/remote/occupations_workathome.csv`.
 
-The ACS extract includes `OCCSOC`, so the project can merge worker occupations directly with the Dingel-Neiman SOC occupation file.
+The ACS extract includes `OCCSOC`, so the project can merge worker occupations directly with the Dingel-Neiman SOC occupation file for the remote-workability part of the analysis.
 
 ## 3. Empirical Strategy
 
 The main regression is:
+
+```text
+log_wage = covid + controls
+```
+
+The project also estimates difference-in-differences style regressions:
 
 ```text
 log_wage = remote_workable + covid + remote_workable x covid + controls
@@ -30,11 +36,15 @@ The main coefficient is:
 
 Since the outcome is log hourly wage, this coefficient is roughly a percent wage difference.
 
+The project also compares post-COVID wage changes across race and age groups.
+
 ## 4. Results Placeholder
 
-Results will be added after the raw data files are placed in the project and the three Stata do-files are run.
+Results will be added after the Stata do-files are run and the tables/figures are reviewed.
 
 ## 5. Limitations
+
+This is a before/after labor-market project, so the post-COVID coefficient should not be interpreted as the effect of COVID alone.
 
 ACS does not directly show whether a person worked remotely. The project measures whether the person's occupation is remote-workable.
 
@@ -42,4 +52,4 @@ The occupation merge may miss some observations if Dingel-Neiman occupation code
 
 ## 6. Conclusion
 
-This project creates a simple, reproducible Stata workflow for studying remote-workability and post-COVID wage growth using public data.
+This project creates a simple, reproducible Stata/R workflow for studying post-COVID wage growth using public data.
