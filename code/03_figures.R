@@ -72,27 +72,27 @@ college$group <- ifelse(college$college == 1,
   "No college degree"
 )
 
-p1 <- ggplot(overall, aes(x = year, y = hourly_wage)) +
+p1 <- ggplot(overall, aes(x = year, y = annual_wage)) +
   geom_line(color = "#2563eb", linewidth = 1.1) +
   geom_point(color = "#2563eb", size = 2) +
   geom_vline(xintercept = 2020, linetype = "dashed", color = "gray40") +
   labs(
     title = "Overall Wage Growth After COVID",
     x = "Year",
-    y = "Average hourly wage"
+    y = "Average annual wage income"
   ) +
   theme_minimal()
 
 ggsave("outputs/figures/overall_wage_growth.png", p1, width = 8, height = 5, dpi = 300)
 
-p2 <- ggplot(remote, aes(x = year, y = hourly_wage, color = group)) +
+p2 <- ggplot(remote, aes(x = year, y = annual_wage, color = group)) +
   geom_line(linewidth = 1.1) +
   geom_point(size = 2) +
   geom_vline(xintercept = 2020, linetype = "dashed", color = "gray40") +
   labs(
     title = "Wage Trends by Remote-Workability",
     x = "Year",
-    y = "Average hourly wage",
+    y = "Average annual wage income",
     color = ""
   ) +
   theme_minimal()
@@ -106,63 +106,63 @@ p3 <- ggplot(remote, aes(x = year, y = log_wage, color = group)) +
   labs(
     title = "Log Wage Trends by Remote-Workability",
     x = "Year",
-    y = "Average log hourly wage",
+    y = "Average log annual wage income",
     color = ""
   ) +
   theme_minimal()
 
 ggsave("outputs/figures/log_wage_trends.png", p3, width = 8, height = 5, dpi = 300)
 
-p4 <- ggplot(race, aes(x = year, y = hourly_wage, color = group)) +
+p4 <- ggplot(race, aes(x = year, y = annual_wage, color = group)) +
   geom_line(linewidth = 1.1) +
   geom_point(size = 2) +
   geom_vline(xintercept = 2020, linetype = "dashed", color = "gray40") +
   labs(
     title = "Wage Trends by Race",
     x = "Year",
-    y = "Average hourly wage",
+    y = "Average annual wage income",
     color = ""
   ) +
   theme_minimal()
 
 ggsave("outputs/figures/race_wage_trends.png", p4, width = 8, height = 5, dpi = 300)
 
-p5 <- ggplot(age, aes(x = year, y = hourly_wage, color = group)) +
+p5 <- ggplot(age, aes(x = year, y = annual_wage, color = group)) +
   geom_line(linewidth = 1.1) +
   geom_point(size = 2) +
   geom_vline(xintercept = 2020, linetype = "dashed", color = "gray40") +
   labs(
     title = "Wage Trends by Age Group",
     x = "Year",
-    y = "Average hourly wage",
+    y = "Average annual wage income",
     color = ""
   ) +
   theme_minimal()
 
 ggsave("outputs/figures/age_wage_trends.png", p5, width = 8, height = 5, dpi = 300)
 
-p6 <- ggplot(gender, aes(x = year, y = hourly_wage, color = group)) +
+p6 <- ggplot(gender, aes(x = year, y = annual_wage, color = group)) +
   geom_line(linewidth = 1.1) +
   geom_point(size = 2) +
   geom_vline(xintercept = 2020, linetype = "dashed", color = "gray40") +
   labs(
     title = "Wage Trends by Gender",
     x = "Year",
-    y = "Average hourly wage",
+    y = "Average annual wage income",
     color = ""
   ) +
   theme_minimal()
 
 ggsave("outputs/figures/gender_wage_trends.png", p6, width = 8, height = 5, dpi = 300)
 
-p7 <- ggplot(college, aes(x = year, y = hourly_wage, color = group)) +
+p7 <- ggplot(college, aes(x = year, y = annual_wage, color = group)) +
   geom_line(linewidth = 1.1) +
   geom_point(size = 2) +
   geom_vline(xintercept = 2020, linetype = "dashed", color = "gray40") +
   labs(
     title = "Wage Trends by Education",
     x = "Year",
-    y = "Average hourly wage",
+    y = "Average annual wage income",
     color = ""
   ) +
   theme_minimal()
@@ -170,7 +170,7 @@ p7 <- ggplot(college, aes(x = year, y = hourly_wage, color = group)) +
 ggsave("outputs/figures/college_wage_trends.png", p7, width = 8, height = 5, dpi = 300)
 
 industry$period <- ifelse(industry$year > 2020, "Post-COVID", "Pre-COVID")
-industry_avg <- aggregate(hourly_wage ~ ind + period, data = industry, FUN = mean)
+industry_avg <- aggregate(annual_wage ~ ind + period, data = industry, FUN = mean)
 
 industry_pre <- subset(industry_avg, period == "Pre-COVID")
 industry_post <- subset(industry_avg, period == "Post-COVID")
@@ -197,14 +197,14 @@ p8 <- ggplot(top_industry, aes(x = reorder(ind, wage_growth), y = wage_growth)) 
   labs(
     title = "Industries With the Biggest Wage Growth After COVID",
     x = "Industry code",
-    y = "Post-COVID wage growth"
+    y = "Post-COVID wage income growth"
   ) +
   theme_minimal()
 
 ggsave("outputs/figures/top_industry_growth.png", p8, width = 8, height = 5, dpi = 300)
 
 state$period <- ifelse(state$year > 2020, "Post-COVID", "Pre-COVID")
-state_avg <- aggregate(hourly_wage ~ stateicp + state_name + period, data = state, FUN = mean)
+state_avg <- aggregate(annual_wage ~ stateicp + state_name + period, data = state, FUN = mean)
 
 state_pre <- subset(state_avg, period == "Pre-COVID")
 state_post <- subset(state_avg, period == "Post-COVID")
@@ -234,14 +234,14 @@ p9 <- ggplot(top_state_growth, aes(x = reorder(state_name, wage_growth), y = wag
   labs(
     title = "States With the Biggest Wage Growth After COVID",
     x = "State",
-    y = "Post-COVID wage growth"
+    y = "Post-COVID wage income growth"
   ) +
   theme_minimal()
 
 ggsave("outputs/figures/top_state_growth.png", p9, width = 8, height = 5, dpi = 300)
 
 state_level <- subset(state, year > 2020)
-state_level <- aggregate(hourly_wage ~ stateicp + state_name, data = state_level, FUN = mean)
+state_level <- aggregate(annual_wage ~ stateicp + state_name, data = state_level, FUN = mean)
 names(state_level)[3] <- "post_covid_wage"
 state_level <- state_level[order(-state_level$post_covid_wage), ]
 top_state_level <- head(state_level, 15)
@@ -254,7 +254,7 @@ p10 <- ggplot(top_state_level, aes(x = reorder(state_name, post_covid_wage), y =
   labs(
     title = "States With the Highest Post-COVID Wage Levels",
     x = "State",
-    y = "Average post-COVID hourly wage"
+    y = "Average post-COVID annual wage income"
   ) +
   theme_minimal()
 
@@ -267,7 +267,7 @@ p11 <- ggplot(ineq, aes(x = year, y = p90_p10_gap)) +
   labs(
     title = "Wage Inequality After COVID",
     x = "Year",
-    y = "P90 hourly wage minus P10 hourly wage"
+    y = "P90 annual wage income minus P10 annual wage income"
   ) +
   theme_minimal()
 
