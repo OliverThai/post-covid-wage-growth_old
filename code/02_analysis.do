@@ -14,7 +14,7 @@ use "data/processed/analysis_data.dta", clear
 log using "outputs/tables/summary_stats.txt", text replace
 
 count
-sum hourly_wage log_wage age
+sum annual_wage log_wage age
 tab year
 tab covid
 tab remote_workable
@@ -30,7 +30,7 @@ log close
 
 preserve
 
-collapse (mean) hourly_wage log_wage [pw=perwt], by(year)
+collapse (mean) annual_wage log_wage [pw=perwt], by(year)
 
 export delimited using "data/processed/overall_trends_for_r.csv", replace nolabel
 
@@ -38,7 +38,7 @@ restore
 
 preserve
 
-collapse (mean) hourly_wage log_wage [pw=perwt], by(year remote_workable)
+collapse (mean) annual_wage log_wage [pw=perwt], by(year remote_workable)
 
 export delimited using "data/processed/wage_trends_for_r.csv", replace nolabel
 
@@ -46,7 +46,7 @@ restore
 
 preserve
 
-collapse (mean) hourly_wage log_wage [pw=perwt], by(year race)
+collapse (mean) annual_wage log_wage [pw=perwt], by(year race)
 
 export delimited using "data/processed/race_trends_for_r.csv", replace nolabel
 
@@ -54,7 +54,7 @@ restore
 
 preserve
 
-collapse (mean) hourly_wage log_wage [pw=perwt], by(year sex)
+collapse (mean) annual_wage log_wage [pw=perwt], by(year sex)
 
 export delimited using "data/processed/gender_trends_for_r.csv", replace nolabel
 
@@ -62,7 +62,7 @@ restore
 
 preserve
 
-collapse (mean) hourly_wage log_wage [pw=perwt], by(year college)
+collapse (mean) annual_wage log_wage [pw=perwt], by(year college)
 
 export delimited using "data/processed/college_trends_for_r.csv", replace nolabel
 
@@ -70,7 +70,7 @@ restore
 
 preserve
 
-collapse (mean) hourly_wage log_wage [pw=perwt], by(year ind)
+collapse (mean) annual_wage log_wage [pw=perwt], by(year ind)
 
 export delimited using "data/processed/industry_trends_for_r.csv", replace nolabel
 
@@ -78,7 +78,7 @@ restore
 
 preserve
 
-collapse (mean) hourly_wage log_wage [pw=perwt], by(year stateicp)
+collapse (mean) annual_wage log_wage [pw=perwt], by(year stateicp)
 
 export delimited using "data/processed/state_trends_for_r.csv", replace nolabel
 
@@ -86,8 +86,8 @@ restore
 
 preserve
 
-collapse (p10) wage_p10=hourly_wage (p50) wage_p50=hourly_wage ///
-    (p90) wage_p90=hourly_wage, by(year)
+collapse (p10) wage_p10=annual_wage (p50) wage_p50=annual_wage ///
+    (p90) wage_p90=annual_wage, by(year)
 
 gen p90_p10_gap = wage_p90 - wage_p10
 gen p90_p10_ratio = wage_p90 / wage_p10
@@ -98,7 +98,7 @@ restore
 
 preserve
 
-collapse (mean) hourly_wage log_wage [pw=perwt], by(year age_group)
+collapse (mean) annual_wage log_wage [pw=perwt], by(year age_group)
 
 export delimited using "data/processed/age_trends_for_r.csv", replace nolabel
 
