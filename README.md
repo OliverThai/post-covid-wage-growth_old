@@ -200,7 +200,6 @@ Cleaned data:
 data/processed/cleaned.dta
 data/processed/remote_soc_only.dta
 data/processed/analysis_data.dta
-data/processed/wage_trends_for_r.csv
 data/processed/race_trends_for_r.csv
 data/processed/age_trends_for_r.csv
 data/processed/gender_trends_for_r.csv
@@ -216,7 +215,6 @@ Tables/logs:
 outputs/tables/summary_stats.txt
 outputs/tables/regressions.txt
 outputs/tables/top_industry_growth.csv
-outputs/tables/top_state_growth.csv
 outputs/tables/top_state_wage_levels.csv
 outputs/tables/percent_growth_by_group.csv
 ```
@@ -224,20 +222,11 @@ outputs/tables/percent_growth_by_group.csv
 Figures:
 
 ```text
-outputs/figures/wage_trends.png
-outputs/figures/log_wage_trends.png
-outputs/figures/race_wage_trends.png
-outputs/figures/age_wage_trends.png
 outputs/figures/overall_wage_growth.png
-outputs/figures/gender_wage_trends.png
-outputs/figures/college_wage_trends.png
 outputs/figures/top_industry_growth.png
-outputs/figures/top_state_growth.png
 outputs/figures/state_wage_levels.png
-outputs/figures/wage_inequality.png
 outputs/figures/p10_p50_p90_trends.png
 outputs/figures/percent_growth_by_group.png
-outputs/figures/pre_post_slope_chart.png
 ```
 
 ## 9.0 Results
