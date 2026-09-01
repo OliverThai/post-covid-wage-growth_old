@@ -17,23 +17,21 @@ keep if empstat == 1
 keep if !missing(age) & age >= 25 & age <= 54
 
 keep if !missing(incwage) & incwage > 0
-keep if !missing(wkswork1) & wkswork1 > 0
-keep if !missing(uhrswork) & uhrswork > 0
 
 gen soc = trim(occsoc)
 drop if soc == "" | soc == "0" | soc == "000000"
 drop if strpos(soc, "X") > 0
 
-gen hourly_wage = incwage / (uhrswork * wkswork1)
+gen annual_wage = incwage
 
-sum hourly_wage
+sum annual_wage
 local mean = r(mean)
 local sd = r(sd)
-drop if hourly_wage > `mean' + (2 * `sd')
-drop if hourly_wage < `mean' - (2 * `sd')
+drop if annual_wage > `mean' + (2 * `sd')
+drop if annual_wage < `mean' - (2 * `sd')
 
 gen covid = year > 2020
-gen log_wage = log(hourly_wage)
+gen log_wage = log(annual_wage)
 gen age2 = age^2
 gen college = educ >= 10
 
@@ -49,7 +47,7 @@ label define age_group_label 1 "25-34" 2 "35-44" 3 "45-54"
 label values age_group age_group_label
 
 count
-sum hourly_wage log_wage age
+sum annual_wage log_wage age
 tab year
 tab covid
 
