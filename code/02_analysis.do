@@ -38,14 +38,6 @@ restore
 
 preserve
 
-collapse (mean) annual_wage log_wage [pw=perwt], by(year remote_workable)
-
-export delimited using "data/processed/wage_trends_for_r.csv", replace nolabel
-
-restore
-
-preserve
-
 collapse (mean) annual_wage log_wage [pw=perwt], by(year race)
 
 export delimited using "data/processed/race_trends_for_r.csv", replace nolabel
