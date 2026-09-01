@@ -14,7 +14,6 @@ setwd(project)
 library(ggplot2)
 
 overall <- read.csv("data/processed/overall_trends_for_r.csv")
-remote <- read.csv("data/processed/wage_trends_for_r.csv")
 race <- read.csv("data/processed/race_trends_for_r.csv")
 age <- read.csv("data/processed/age_trends_for_r.csv")
 gender <- read.csv("data/processed/gender_trends_for_r.csv")
@@ -45,11 +44,6 @@ state_names <- data.frame(
 state <- merge(state, state_names, by = "stateicp")
 
 overall$group <- "All workers"
-
-remote$group <- ifelse(remote$remote_workable == 1,
-  "Remote-workable",
-  "Less remote-workable"
-)
 
 race$group <- ifelse(race$race == 1, "White",
   ifelse(race$race == 2, "Black",
@@ -85,90 +79,6 @@ p1 <- ggplot(overall, aes(x = year, y = annual_wage)) +
 
 ggsave("outputs/figures/overall_wage_growth.png", p1, width = 8, height = 5, dpi = 300)
 
-p2 <- ggplot(remote, aes(x = year, y = annual_wage, color = group)) +
-  geom_line(linewidth = 1.1) +
-  geom_point(size = 2) +
-  geom_vline(xintercept = 2020, linetype = "dashed", color = "gray40") +
-  labs(
-    title = "Wage Trends by Remote-Workability",
-    x = "Year",
-    y = "Average annual wage income",
-    color = ""
-  ) +
-  theme_minimal()
-
-ggsave("outputs/figures/wage_trends.png", p2, width = 8, height = 5, dpi = 300)
-
-p3 <- ggplot(remote, aes(x = year, y = log_wage, color = group)) +
-  geom_line(linewidth = 1.1) +
-  geom_point(size = 2) +
-  geom_vline(xintercept = 2020, linetype = "dashed", color = "gray40") +
-  labs(
-    title = "Log Wage Trends by Remote-Workability",
-    x = "Year",
-    y = "Average log annual wage income",
-    color = ""
-  ) +
-  theme_minimal()
-
-ggsave("outputs/figures/log_wage_trends.png", p3, width = 8, height = 5, dpi = 300)
-
-p4 <- ggplot(race, aes(x = year, y = annual_wage, color = group)) +
-  geom_line(linewidth = 1.1) +
-  geom_point(size = 2) +
-  geom_vline(xintercept = 2020, linetype = "dashed", color = "gray40") +
-  labs(
-    title = "Wage Trends by Race",
-    x = "Year",
-    y = "Average annual wage income",
-    color = ""
-  ) +
-  theme_minimal()
-
-ggsave("outputs/figures/race_wage_trends.png", p4, width = 8, height = 5, dpi = 300)
-
-p5 <- ggplot(age, aes(x = year, y = annual_wage, color = group)) +
-  geom_line(linewidth = 1.1) +
-  geom_point(size = 2) +
-  geom_vline(xintercept = 2020, linetype = "dashed", color = "gray40") +
-  labs(
-    title = "Wage Trends by Age Group",
-    x = "Year",
-    y = "Average annual wage income",
-    color = ""
-  ) +
-  theme_minimal()
-
-ggsave("outputs/figures/age_wage_trends.png", p5, width = 8, height = 5, dpi = 300)
-
-p6 <- ggplot(gender, aes(x = year, y = annual_wage, color = group)) +
-  geom_line(linewidth = 1.1) +
-  geom_point(size = 2) +
-  geom_vline(xintercept = 2020, linetype = "dashed", color = "gray40") +
-  labs(
-    title = "Wage Trends by Gender",
-    x = "Year",
-    y = "Average annual wage income",
-    color = ""
-  ) +
-  theme_minimal()
-
-ggsave("outputs/figures/gender_wage_trends.png", p6, width = 8, height = 5, dpi = 300)
-
-p7 <- ggplot(college, aes(x = year, y = annual_wage, color = group)) +
-  geom_line(linewidth = 1.1) +
-  geom_point(size = 2) +
-  geom_vline(xintercept = 2020, linetype = "dashed", color = "gray40") +
-  labs(
-    title = "Wage Trends by Education",
-    x = "Year",
-    y = "Average annual wage income",
-    color = ""
-  ) +
-  theme_minimal()
-
-ggsave("outputs/figures/college_wage_trends.png", p7, width = 8, height = 5, dpi = 300)
-
 industry$period <- ifelse(industry$year > 2020, "Post-COVID", "Pre-COVID")
 industry_avg <- aggregate(annual_wage ~ ind + period, data = industry, FUN = mean)
 
@@ -203,43 +113,6 @@ p8 <- ggplot(top_industry, aes(x = reorder(ind, wage_growth), y = wage_growth)) 
 
 ggsave("outputs/figures/top_industry_growth.png", p8, width = 8, height = 5, dpi = 300)
 
-state$period <- ifelse(state$year > 2020, "Post-COVID", "Pre-COVID")
-state_avg <- aggregate(annual_wage ~ stateicp + state_name + period, data = state, FUN = mean)
-
-state_pre <- subset(state_avg, period == "Pre-COVID")
-state_post <- subset(state_avg, period == "Post-COVID")
-
-names(state_pre)[4] <- "pre_wage"
-names(state_post)[4] <- "post_wage"
-
-state_growth <- merge(
-  state_pre[, c("stateicp", "state_name", "pre_wage")],
-  state_post[, c("stateicp", "state_name", "post_wage")],
-  by = "stateicp"
-)
-
-state_growth$state_name <- state_growth$state_name.x
-state_growth$state_name.x <- NULL
-state_growth$state_name.y <- NULL
-
-state_growth$wage_growth <- state_growth$post_wage - state_growth$pre_wage
-state_growth <- state_growth[order(-state_growth$wage_growth), ]
-top_state_growth <- head(state_growth, 15)
-
-write.csv(top_state_growth, "outputs/tables/top_state_growth.csv", row.names = FALSE)
-
-p9 <- ggplot(top_state_growth, aes(x = reorder(state_name, wage_growth), y = wage_growth)) +
-  geom_col(fill = "#16a34a") +
-  coord_flip() +
-  labs(
-    title = "States With the Biggest Wage Growth After COVID",
-    x = "State",
-    y = "Post-COVID wage income growth"
-  ) +
-  theme_minimal()
-
-ggsave("outputs/figures/top_state_growth.png", p9, width = 8, height = 5, dpi = 300)
-
 state_level <- subset(state, year > 2020)
 state_level <- aggregate(annual_wage ~ stateicp + state_name, data = state_level, FUN = mean)
 names(state_level)[3] <- "post_covid_wage"
@@ -259,19 +132,6 @@ p10 <- ggplot(top_state_level, aes(x = reorder(state_name, post_covid_wage), y =
   theme_minimal()
 
 ggsave("outputs/figures/state_wage_levels.png", p10, width = 8, height = 5, dpi = 300)
-
-p11 <- ggplot(ineq, aes(x = year, y = p90_p10_gap)) +
-  geom_line(color = "#dc2626", linewidth = 1.1) +
-  geom_point(color = "#dc2626", size = 2) +
-  geom_vline(xintercept = 2020, linetype = "dashed", color = "gray40") +
-  labs(
-    title = "Wage Inequality After COVID",
-    x = "Year",
-    y = "P90 annual wage income minus P10 annual wage income"
-  ) +
-  theme_minimal()
-
-ggsave("outputs/figures/wage_inequality.png", p11, width = 8, height = 5, dpi = 300)
 
 p12_data <- data.frame(
   year = c(ineq$year, ineq$year, ineq$year),
@@ -342,22 +202,5 @@ p13 <- ggplot(group_growth, aes(x = reorder(group, percent_growth), y = percent_
   theme_minimal()
 
 ggsave("outputs/figures/percent_growth_by_group.png", p13, width = 10, height = 7, dpi = 300)
-
-slope_data <- group_avg
-slope_data$period <- factor(slope_data$period, levels = c("Pre-COVID", "Post-COVID"))
-
-p14 <- ggplot(slope_data, aes(x = period, y = annual_wage, group = group, color = group)) +
-  geom_line(linewidth = 1.1) +
-  geom_point(size = 2) +
-  facet_wrap(~type, scales = "free_y") +
-  labs(
-    title = "Pre-COVID vs Post-COVID Wages by Group",
-    x = "",
-    y = "Average annual wage income",
-    color = ""
-  ) +
-  theme_minimal()
-
-ggsave("outputs/figures/pre_post_slope_chart.png", p14, width = 10, height = 7, dpi = 300)
 
 message("Saved figures to outputs/figures/")
