@@ -273,4 +273,91 @@ p11 <- ggplot(ineq, aes(x = year, y = p90_p10_gap)) +
 
 ggsave("outputs/figures/wage_inequality.png", p11, width = 8, height = 5, dpi = 300)
 
+p12_data <- data.frame(
+  year = c(ineq$year, ineq$year, ineq$year),
+  wage = c(ineq$wage_p10, ineq$wage_p50, ineq$wage_p90),
+  group = c(
+    rep("P10: low-wage workers", nrow(ineq)),
+    rep("P50: median workers", nrow(ineq)),
+    rep("P90: high-wage workers", nrow(ineq))
+  )
+)
+
+p12 <- ggplot(p12_data, aes(x = year, y = wage, color = group)) +
+  geom_line(linewidth = 1.1) +
+  geom_point(size = 2) +
+  geom_vline(xintercept = 2020, linetype = "dashed", color = "gray40") +
+  labs(
+    title = "Low-, Median-, and High-Wage Trends After COVID",
+    x = "Year",
+    y = "Annual wage income",
+    color = ""
+  ) +
+  theme_minimal()
+
+ggsave("outputs/figures/p10_p50_p90_trends.png", p12, width = 8, height = 5, dpi = 300)
+
+gender_small <- gender[, c("year", "annual_wage", "group")]
+gender_small$type <- "Gender"
+
+college_small <- college[, c("year", "annual_wage", "group")]
+college_small$type <- "Education"
+
+age_small <- age[, c("year", "annual_wage", "group")]
+age_small$type <- "Age"
+
+race_small <- race[, c("year", "annual_wage", "group")]
+race_small$type <- "Race"
+
+group_data <- rbind(gender_small, college_small, age_small, race_small)
+group_data$period <- ifelse(group_data$year > 2020, "Post-COVID", "Pre-COVID")
+
+group_avg <- aggregate(annual_wage ~ type + group + period, data = group_data, FUN = mean)
+
+group_pre <- subset(group_avg, period == "Pre-COVID")
+group_post <- subset(group_avg, period == "Post-COVID")
+
+names(group_pre)[4] <- "pre_wage"
+names(group_post)[4] <- "post_wage"
+
+group_growth <- merge(
+  group_pre[, c("type", "group", "pre_wage")],
+  group_post[, c("type", "group", "post_wage")],
+  by = c("type", "group")
+)
+
+group_growth$percent_growth <- 100 * (group_growth$post_wage - group_growth$pre_wage) / group_growth$pre_wage
+
+write.csv(group_growth, "outputs/tables/percent_growth_by_group.csv", row.names = FALSE)
+
+p13 <- ggplot(group_growth, aes(x = reorder(group, percent_growth), y = percent_growth)) +
+  geom_col(fill = "#2563eb") +
+  coord_flip() +
+  facet_wrap(~type, scales = "free_y") +
+  labs(
+    title = "Percent Wage Growth After COVID by Group",
+    x = "",
+    y = "Percent growth from pre-COVID to post-COVID"
+  ) +
+  theme_minimal()
+
+ggsave("outputs/figures/percent_growth_by_group.png", p13, width = 10, height = 7, dpi = 300)
+
+slope_data <- group_avg
+slope_data$period <- factor(slope_data$period, levels = c("Pre-COVID", "Post-COVID"))
+
+p14 <- ggplot(slope_data, aes(x = period, y = annual_wage, group = group, color = group)) +
+  geom_line(linewidth = 1.1) +
+  geom_point(size = 2) +
+  facet_wrap(~type, scales = "free_y") +
+  labs(
+    title = "Pre-COVID vs Post-COVID Wages by Group",
+    x = "",
+    y = "Average annual wage income",
+    color = ""
+  ) +
+  theme_minimal()
+
+ggsave("outputs/figures/pre_post_slope_chart.png", p14, width = 10, height = 7, dpi = 300)
+
 message("Saved figures to outputs/figures/")
