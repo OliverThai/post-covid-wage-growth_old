@@ -19,10 +19,12 @@ tab year
 tab covid
 tab remote_workable
 tab covid remote_workable
+tab race
+tab age_group
 
 log close
 
-* Make a small file for the R figure script
+* Make small files for the R figure script
 
 preserve
 
@@ -32,10 +34,33 @@ export delimited using "data/processed/wage_trends_for_r.csv", replace
 
 restore
 
+preserve
+
+collapse (mean) hourly_wage log_wage [pw=perwt], by(year race)
+
+export delimited using "data/processed/race_trends_for_r.csv", replace
+
+restore
+
+preserve
+
+collapse (mean) hourly_wage log_wage [pw=perwt], by(year age_group)
+
+export delimited using "data/processed/age_trends_for_r.csv", replace
+
+restore
+
 * Regressions
 
 log using "outputs/tables/regressions.txt", text replace
 
+* Main post-COVID wage regression.
+* The coefficient on 1.covid shows the average wage difference after 2020.
+
+reg log_wage i.covid age age2 i.educ i.sex i.race ///
+    i.stateicp i.ind [pw=perwt], robust
+
+* Remote-workability regression.
 * Main coefficient to look at:
 * 1.remote_workable#1.covid
 *
@@ -53,6 +78,14 @@ reg log_wage i.remote_workable##i.covid age age2 i.educ i.sex i.race ///
 
 reg log_wage c.remote_score##i.covid age age2 i.educ i.sex i.race ///
     i.stateicp i.year i.ind [pw=perwt], robust
+
+* Heterogeneity by race and age group.
+
+reg log_wage i.race##i.covid age age2 i.educ i.sex ///
+    i.stateicp i.ind [pw=perwt], robust
+
+reg log_wage i.age_group##i.covid age age2 i.educ i.sex i.race ///
+    i.stateicp i.ind [pw=perwt], robust
 
 log close
 
