@@ -35,6 +35,10 @@ drop if hourly_wage < `mean' - (2 * `sd')
 gen covid = year > 2020
 gen log_wage = log(hourly_wage)
 gen age2 = age^2
+gen college = educ >= 10
+
+label define college_label 0 "No college degree" 1 "College degree"
+label values college college_label
 
 gen age_group = .
 replace age_group = 1 if age >= 25 & age <= 34
