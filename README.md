@@ -8,11 +8,11 @@ A Stata/R economics project studying how wages changed after COVID.
 
 The COVID-19 pandemic changed the U.S. labor market. Wages did not necessarily change the same way for every group of workers.
 
-This project asks how wages changed after COVID and whether those changes looked different across race groups, age groups, and remote-workable occupations.
+This project asks how wages changed after COVID and whether those changes looked different across race groups, age groups, gender, education, industry, state, and remote-workable occupations.
 
 The main research question is:
 
-**How were wages affected after COVID, and did the changes differ by race, age, and occupation remote-workability?**
+**How were wages affected after COVID, and did those changes differ across workers and places?**
 
 ## 2.0 Research Assumptions
 
@@ -141,6 +141,18 @@ reg log_wage i.race##i.covid age age2 i.educ i.sex ///
 
 reg log_wage i.age_group##i.covid age age2 i.educ i.sex i.race ///
     i.stateicp i.ind [pw=perwt], robust
+
+reg log_wage i.sex##i.covid age age2 i.educ i.race ///
+    i.stateicp i.ind [pw=perwt], robust
+
+reg log_wage i.college##i.covid age age2 i.sex i.race ///
+    i.stateicp i.ind [pw=perwt], robust
+
+reg log_wage i.ind##i.covid age age2 i.educ i.sex i.race ///
+    i.stateicp [pw=perwt], robust
+
+reg log_wage i.stateicp##i.covid age age2 i.educ i.sex i.race ///
+    i.ind [pw=perwt], robust
 ```
 
 ## 6.0 Project Structure
@@ -190,6 +202,11 @@ data/processed/analysis_data.dta
 data/processed/wage_trends_for_r.csv
 data/processed/race_trends_for_r.csv
 data/processed/age_trends_for_r.csv
+data/processed/gender_trends_for_r.csv
+data/processed/college_trends_for_r.csv
+data/processed/industry_trends_for_r.csv
+data/processed/state_trends_for_r.csv
+data/processed/inequality_trends_for_r.csv
 ```
 
 Tables/logs:
@@ -197,6 +214,9 @@ Tables/logs:
 ```text
 outputs/tables/summary_stats.txt
 outputs/tables/regressions.txt
+outputs/tables/top_industry_growth.csv
+outputs/tables/top_state_growth.csv
+outputs/tables/top_state_wage_levels.csv
 ```
 
 Figures:
@@ -206,6 +226,13 @@ outputs/figures/wage_trends.png
 outputs/figures/log_wage_trends.png
 outputs/figures/race_wage_trends.png
 outputs/figures/age_wage_trends.png
+outputs/figures/overall_wage_growth.png
+outputs/figures/gender_wage_trends.png
+outputs/figures/college_wage_trends.png
+outputs/figures/top_industry_growth.png
+outputs/figures/top_state_growth.png
+outputs/figures/state_wage_levels.png
+outputs/figures/wage_inequality.png
 ```
 
 ## 9.0 Results
@@ -219,6 +246,10 @@ The main results will come from:
 1.remote_workable#1.covid
 i.race#1.covid
 i.age_group#1.covid
+i.sex#1.covid
+i.college#1.covid
+i.ind#1.covid
+i.stateicp#1.covid
 ```
 
 The `1.covid` coefficient shows the average post-COVID wage difference.
