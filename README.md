@@ -218,6 +218,7 @@ outputs/tables/regressions.txt
 outputs/tables/top_industry_growth.csv
 outputs/tables/top_state_growth.csv
 outputs/tables/top_state_wage_levels.csv
+outputs/tables/percent_growth_by_group.csv
 ```
 
 Figures:
@@ -234,6 +235,9 @@ outputs/figures/top_industry_growth.png
 outputs/figures/top_state_growth.png
 outputs/figures/state_wage_levels.png
 outputs/figures/wage_inequality.png
+outputs/figures/p10_p50_p90_trends.png
+outputs/figures/percent_growth_by_group.png
+outputs/figures/pre_post_slope_chart.png
 ```
 
 ## 9.0 Results
