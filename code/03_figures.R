@@ -14,6 +14,7 @@ setwd(project)
 library(ggplot2)
 
 overall <- read.csv("data/processed/overall_trends_for_r.csv")
+remote <- read.csv("data/processed/remote_trends_for_r.csv")
 race <- read.csv("data/processed/race_trends_for_r.csv")
 age <- read.csv("data/processed/age_trends_for_r.csv")
 gender <- read.csv("data/processed/gender_trends_for_r.csv")
@@ -44,6 +45,11 @@ state_names <- data.frame(
 state <- merge(state, state_names, by = "stateicp")
 
 overall$group <- "All workers"
+
+remote$group <- ifelse(remote$remote_workable == 1,
+  "Remote-workable",
+  "Less remote-workable"
+)
 
 race$group <- ifelse(race$race == 1, "White",
   ifelse(race$race == 2, "Black",
@@ -78,6 +84,20 @@ p1 <- ggplot(overall, aes(x = year, y = annual_wage)) +
   theme_minimal()
 
 ggsave("outputs/figures/overall_wage_growth.png", p1, width = 8, height = 5, dpi = 300)
+
+p2 <- ggplot(remote, aes(x = year, y = log_wage, color = group)) +
+  geom_line(linewidth = 1.1) +
+  geom_point(size = 2) +
+  geom_vline(xintercept = 2020, linetype = "dashed", color = "gray40") +
+  labs(
+    title = "Log Wage Trends by Remote-Workability",
+    x = "Year",
+    y = "Average log annual wage income",
+    color = ""
+  ) +
+  theme_minimal()
+
+ggsave("outputs/figures/log_wage_trends.png", p2, width = 8, height = 5, dpi = 300)
 
 industry$period <- ifelse(industry$year > 2020, "Post-COVID", "Pre-COVID")
 industry_avg <- aggregate(annual_wage ~ ind + period, data = industry, FUN = mean)
