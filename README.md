@@ -167,7 +167,6 @@ data/processed/
 outputs/
 outputs/tables/
 outputs/figures/
-notes/
 ```
 
 ## 7.0 How to Run
