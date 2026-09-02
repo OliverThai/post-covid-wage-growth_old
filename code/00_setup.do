@@ -3,7 +3,7 @@
 clear all
 set more off
 
-global project "/Users/ollie1/Documents/New project/remote-work-career-project"
+global project "`c(pwd)'"
 
 cd "$project"
 
