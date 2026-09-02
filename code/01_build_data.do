@@ -1,5 +1,5 @@
 * 01_build_data.do
-* Clean ACS, clean remote-work data, and merge everything together
+* Clean ACS, clean remote work data, and merge everything together
 
 clear all
 set more off
@@ -53,7 +53,7 @@ tab covid
 
 save "data/processed/cleaned.dta", replace
 
-* Clean Dingel-Neiman remote-workability data
+* Clean Dingel and Neiman remote work data
 
 import delimited "data/raw/remote/occupations_workathome.csv", clear varnames(1)
 
@@ -72,7 +72,7 @@ gen remote_workable = remote_score >= .5
 
 save "data/processed/remote_soc_only.dta", replace
 
-* Merge ACS with remote-workability data
+* Merge ACS with remote work data
 
 use "data/processed/cleaned.dta", clear
 
