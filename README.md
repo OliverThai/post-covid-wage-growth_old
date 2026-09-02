@@ -101,8 +101,10 @@ Because the outcome is log wage income, a coefficient like `0.05` is roughly a 5
 Open Stata and move into the project folder:
 
 ```stata
-cd "/Users/ollie1/Documents/New project/remote-work-career-project"
+cd "PATH/TO/remote-work-career-project"
 ```
+
+Replace `PATH/TO` with the place where the project is saved on your computer.
 
 Then run:
 
