@@ -1,53 +1,26 @@
 # Wage Growth After COVID
 
-A Stata/R economics project studying how wages changed after COVID.
+This project looks at how wage income changed after COVID using public ACS/IPUMS labor-market data. The main question is whether wage growth after COVID looked different across workers, industries, states, and occupations that were more or less remote-workable.
 
-# Wage Growth After COVID
+The project uses Stata for the main cleaning and regression work. R is used at the end to make the figures.
 
-## 1.0 Research Problem
+## Research Question
 
-The COVID-19 pandemic changed the U.S. labor market. Wages did not necessarily change the same way for every group of workers.
+How were wages affected after COVID, and did those changes differ across groups of workers?
 
-This project asks how wages changed after COVID and whether those changes looked different across race groups, age groups, gender, education, industry, state, and remote-workable occupations.
+The project also keeps the original remote-work question:
 
-The main research question is:
+Did workers in remote-workable occupations experience different wage growth after COVID compared with workers in less remote-workable occupations?
 
-**How were wages affected after COVID, and did those changes differ across workers and places?**
+## Data
 
-## 2.0 Research Assumptions
-
-This project studies wage changes before and after COVID using public ACS/IPUMS data.
-
-For the remote-work part, the project studies remote-workable occupations, not confirmed remote workers. ACS does not directly say whether each person worked remotely.
-
-Remote-workability is measured at the occupation level using Dingel-Neiman work-from-home feasibility data.
-
-The main wage outcome is annual wage income:
-
-```text
-annual_wage = INCWAGE
-log_wage = log(annual_wage)
-```
-
-The project uses annual wage income instead of hourly wage because `WKSWORK1` is missing for 2016-2018 in the current ACS extract. Using `INCWAGE` keeps the full set of years in the graphs and regressions.
-
-The COVID/post period variable is:
-
-```text
-covid = year > 2020
-```
-
-The sample keeps employed prime-age workers, ages 25 to 54.
-
-## 3.0 Data Sources
-
-The main worker-level data comes from ACS/IPUMS. The expected file is:
+The worker-level data comes from ACS/IPUMS. The raw ACS file should be saved here:
 
 ```text
 data/raw/usa_00001.dta
 ```
 
-The ACS/IPUMS variables used are:
+The project uses these ACS/IPUMS variables:
 
 ```text
 YEAR
@@ -64,15 +37,13 @@ INCWAGE
 PERWT
 ```
 
-The important occupation variable is `OCCSOC`, because it lets the project merge ACS occupations directly with the Dingel-Neiman remote-workability file.
-
-The remote-workability data comes from Dingel and Neiman's occupation-level work-from-home feasibility file:
+Remote-workability comes from the Dingel-Neiman occupation-level work-from-home feasibility file. Save it here:
 
 ```text
 data/raw/remote/occupations_workathome.csv
 ```
 
-The file currently has:
+That file should include:
 
 ```text
 onetsoccode
@@ -80,104 +51,60 @@ title
 teleworkable
 ```
 
-The Stata code cleans `onetsoccode` into the same six-digit SOC format as `OCCSOC`, then merges the files.
+The ACS extract includes `OCCSOC`, so the Stata code can merge workers to the remote-workability data using SOC occupation codes.
 
-## 4.0 Solution Strategy
+## Main Variables
 
-The project mostly uses Stata, with one small R file for nicer figures.
+The outcome is annual wage income:
 
-Step 01. Setup: Create the project folders.
+```stata
+gen annual_wage = incwage
+gen log_wage = log(annual_wage)
+```
 
-Step 02. Build Data: Clean the ACS data, clean the remote-workability data, and merge everything into one analysis dataset.
+I use annual wage income instead of hourly wage because `WKSWORK1` is missing for 2016-2018 in the current ACS extract. Using `INCWAGE` keeps the full 2016-2024 sample.
 
-Step 03. Analysis: Create summary stats, run the regressions, and export wage-trend files.
+The post-COVID variable is:
 
-Step 04. Figures: R reads the wage-trend files and saves the graphs.
+```stata
+gen covid = year > 2020
+```
 
-## 5.0 Method
+The sample keeps employed prime-age workers ages 25 to 54.
 
-The first regression idea is:
+## Method
+
+The basic regression compares wages before and after COVID:
 
 ```text
 log_wage = covid + controls
 ```
 
-The coefficient on `covid` shows the average post-COVID annual wage-income difference, after controls.
-
-The remote-workability regression idea is:
+The remote-workability regression uses an interaction:
 
 ```text
 log_wage = remote_workable + covid + remote_workable x covid + controls
 ```
 
-The main coefficient to look at is:
+The main coefficient is:
 
 ```text
 1.remote_workable#1.covid
 ```
 
-Because the outcome is log annual wage income, a coefficient of `0.05` is about a 5 percent wage-income difference.
+If this coefficient is positive, remote-workable occupations had higher wage growth after COVID relative to less remote-workable occupations. If it is negative, they had lower relative wage growth.
 
-The main Stata regressions are:
+Because the outcome is log wage income, a coefficient like `0.05` is roughly a 5 percent difference.
 
-```stata
-reg log_wage i.covid age age2 i.educ i.sex i.race ///
-    i.stateicp i.ind [pw=perwt], robust
+## How to Run
 
-reg log_wage i.remote_workable##i.covid [pw=perwt], robust
-
-reg log_wage i.remote_workable##i.covid age age2 i.educ i.sex [pw=perwt], robust
-
-reg log_wage i.remote_workable##i.covid age age2 i.educ i.sex ///
-    i.race i.stateicp i.year [pw=perwt], robust
-
-reg log_wage i.remote_workable##i.covid age age2 i.educ i.sex ///
-    i.race i.stateicp i.year i.ind [pw=perwt], robust
-
-reg log_wage c.remote_score##i.covid age age2 i.educ i.sex ///
-    i.race i.stateicp i.year i.ind [pw=perwt], robust
-
-reg log_wage i.race##i.covid age age2 i.educ i.sex ///
-    i.stateicp i.ind [pw=perwt], robust
-
-reg log_wage i.age_group##i.covid age age2 i.educ i.sex i.race ///
-    i.stateicp i.ind [pw=perwt], robust
-
-reg log_wage i.sex##i.covid age age2 i.educ i.race ///
-    i.stateicp i.ind [pw=perwt], robust
-
-reg log_wage i.college##i.covid age age2 i.sex i.race ///
-    i.stateicp i.ind [pw=perwt], robust
-
-reg log_wage i.ind##i.covid age age2 i.educ i.sex i.race ///
-    i.stateicp [pw=perwt], robust
-
-reg log_wage i.stateicp##i.covid age age2 i.educ i.sex i.race ///
-    i.ind [pw=perwt], robust
-```
-
-## 6.0 Project Structure
-
-```text
-code/
-data/
-data/raw/
-data/raw/remote/
-data/processed/
-outputs/
-outputs/tables/
-outputs/figures/
-```
-
-## 7.0 How to Run
-
-Open Stata and set the working directory to the project folder:
+Open Stata and move into the project folder:
 
 ```stata
 cd "/Users/ollie1/Documents/New project/remote-work-career-project"
 ```
 
-Then run the files in order:
+Then run:
 
 ```stata
 do code/00_setup.do
@@ -185,31 +112,23 @@ do code/01_build_data.do
 do code/02_analysis.do
 ```
 
-The last Stata file runs the R figure script automatically. If that does not work inside Stata, run this in Terminal:
+The last Stata file runs the R figure script automatically. If R does not run from Stata, run this separately in Terminal:
 
 ```text
 Rscript code/03_figures.R
 ```
 
-## 8.0 Expected Outputs
+## Outputs
 
-Cleaned data:
+Main cleaned data files:
 
 ```text
 data/processed/cleaned.dta
 data/processed/remote_soc_only.dta
 data/processed/analysis_data.dta
-data/processed/remote_trends_for_r.csv
-data/processed/race_trends_for_r.csv
-data/processed/age_trends_for_r.csv
-data/processed/gender_trends_for_r.csv
-data/processed/college_trends_for_r.csv
-data/processed/industry_trends_for_r.csv
-data/processed/state_trends_for_r.csv
-data/processed/inequality_trends_for_r.csv
 ```
 
-Tables/logs:
+Tables:
 
 ```text
 outputs/tables/summary_stats.txt
@@ -230,25 +149,18 @@ outputs/figures/p10_p50_p90_trends.png
 outputs/figures/percent_growth_by_group.png
 ```
 
-## 9.0 Results
+## Results
 
-Results are not filled in yet because the Stata do-files still need to be run.
-
-The main results will come from:
+The results are not written into the project yet. After running the Stata files, the main regression output will be in:
 
 ```text
-1.covid
-1.remote_workable#1.covid
-i.race#1.covid
-i.age_group#1.covid
-i.sex#1.covid
-i.college#1.covid
-i.ind#1.covid
-i.stateicp#1.covid
+outputs/tables/regressions.txt
 ```
 
-The `1.covid` coefficient shows the average post-COVID wage difference.
+The key number for the remote-work part is:
 
-If the remote-workability interaction is positive, remote-workable occupations had higher wage growth after COVID relative to less remote-workable occupations.
+```text
+1.remote_workable#1.covid
+```
 
-If the remote-workability interaction is negative, remote-workable occupations had lower wage growth after COVID relative to less remote-workable occupations.
+The figures can be used to describe overall wage growth, wage growth by group, industry wage growth, state wage levels, and wage inequality after COVID.
