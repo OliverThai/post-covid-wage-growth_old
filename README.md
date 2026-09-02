@@ -252,39 +252,3 @@ The `1.covid` coefficient shows the average post-COVID wage difference.
 If the remote-workability interaction is positive, remote-workable occupations had higher wage growth after COVID relative to less remote-workable occupations.
 
 If the remote-workability interaction is negative, remote-workable occupations had lower wage growth after COVID relative to less remote-workable occupations.
-
-## 10.0 Limitations
-
-This is a before/after project, so it should be interpreted carefully. Many things changed after COVID besides remote work.
-
-ACS does not directly measure whether each person worked remotely.
-
-The project assigns remote-workability by occupation, so it compares types of jobs instead of actual remote-work status.
-
-The Dingel-Neiman occupation codes may not perfectly match every IPUMS `OCCSOC` code, so the merge needs to be checked carefully.
-
-## 11.0 Connection to Hybrid-Work Research
-
-This project is inspired by research on hybrid work, turnover, and promotions. Those papers often use internal firm data to directly observe promotions and retention.
-
-This project uses public labor-market data instead. It studies wage growth as a proxy for career advancement rather than internal promotions.
-
-## 12.0 Lessons Learned
-
-Public data can still be used to study career advancement questions when private company data are unavailable.
-
-Occupation-level remote-workability measures are useful, but the occupation-code merge is important.
-
-Log wage regressions are helpful because the results can be read approximately as percent differences.
-
-## 13.0 Next Steps
-
-Add `usa_00001.dta` to `data/raw/`.
-
-Add `occupations_workathome.csv` to `data/raw/remote/`.
-
-Run the three Stata do-files in order.
-
-Check the merge results from `tab _merge`.
-
-Update this README with the actual regression result after the code runs.
