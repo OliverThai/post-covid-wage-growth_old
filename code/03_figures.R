@@ -47,8 +47,8 @@ state <- merge(state, state_names, by = "stateicp")
 overall$group <- "All workers"
 
 remote$group <- ifelse(remote$remote_workable == 1,
-  "Remote-workable",
-  "Less remote-workable"
+  "More suited to remote work",
+  "Less suited to remote work"
 )
 
 race$group <- ifelse(race$race == 1, "White",
@@ -90,7 +90,7 @@ p2 <- ggplot(remote, aes(x = year, y = log_wage, color = group)) +
   geom_point(size = 2) +
   geom_vline(xintercept = 2020, linetype = "dashed", color = "gray40") +
   labs(
-    title = "Log Wage Trends by Remote-Workability",
+    title = "Log Wage Trends by Remote Work Feasibility",
     x = "Year",
     y = "Average log annual wage income",
     color = ""
@@ -99,11 +99,11 @@ p2 <- ggplot(remote, aes(x = year, y = log_wage, color = group)) +
 
 ggsave("outputs/figures/log_wage_trends.png", p2, width = 8, height = 5, dpi = 300)
 
-industry$period <- ifelse(industry$year > 2020, "Post-COVID", "Pre-COVID")
+industry$period <- ifelse(industry$year > 2020, "After COVID", "Before COVID")
 industry_avg <- aggregate(annual_wage ~ ind + period, data = industry, FUN = mean)
 
-industry_pre <- subset(industry_avg, period == "Pre-COVID")
-industry_post <- subset(industry_avg, period == "Post-COVID")
+industry_pre <- subset(industry_avg, period == "Before COVID")
+industry_post <- subset(industry_avg, period == "After COVID")
 
 names(industry_pre)[3] <- "pre_wage"
 names(industry_post)[3] <- "post_wage"
@@ -127,7 +127,7 @@ p8 <- ggplot(top_industry, aes(x = reorder(ind, wage_growth), y = wage_growth)) 
   labs(
     title = "Industries With the Biggest Wage Growth After COVID",
     x = "Industry code",
-    y = "Post-COVID wage income growth"
+    y = "Wage income growth after COVID"
   ) +
   theme_minimal()
 
@@ -145,9 +145,9 @@ p10 <- ggplot(top_state_level, aes(x = reorder(state_name, post_covid_wage), y =
   geom_col(fill = "#7c3aed") +
   coord_flip() +
   labs(
-    title = "States With the Highest Post-COVID Wage Levels",
+    title = "States With the Highest Wage Levels After COVID",
     x = "State",
-    y = "Average post-COVID annual wage income"
+    y = "Average annual wage income after COVID"
   ) +
   theme_minimal()
 
@@ -157,9 +157,9 @@ p12_data <- data.frame(
   year = c(ineq$year, ineq$year, ineq$year),
   wage = c(ineq$wage_p10, ineq$wage_p50, ineq$wage_p90),
   group = c(
-    rep("P10: low-wage workers", nrow(ineq)),
+    rep("P10: lower wage workers", nrow(ineq)),
     rep("P50: median workers", nrow(ineq)),
-    rep("P90: high-wage workers", nrow(ineq))
+    rep("P90: higher wage workers", nrow(ineq))
   )
 )
 
@@ -168,7 +168,7 @@ p12 <- ggplot(p12_data, aes(x = year, y = wage, color = group)) +
   geom_point(size = 2) +
   geom_vline(xintercept = 2020, linetype = "dashed", color = "gray40") +
   labs(
-    title = "Low-, Median-, and High-Wage Trends After COVID",
+    title = "Lower, Median, and Higher Wage Trends After COVID",
     x = "Year",
     y = "Annual wage income",
     color = ""
@@ -190,12 +190,12 @@ race_small <- race[, c("year", "annual_wage", "group")]
 race_small$type <- "Race"
 
 group_data <- rbind(gender_small, college_small, age_small, race_small)
-group_data$period <- ifelse(group_data$year > 2020, "Post-COVID", "Pre-COVID")
+group_data$period <- ifelse(group_data$year > 2020, "After COVID", "Before COVID")
 
 group_avg <- aggregate(annual_wage ~ type + group + period, data = group_data, FUN = mean)
 
-group_pre <- subset(group_avg, period == "Pre-COVID")
-group_post <- subset(group_avg, period == "Post-COVID")
+group_pre <- subset(group_avg, period == "Before COVID")
+group_post <- subset(group_avg, period == "After COVID")
 
 names(group_pre)[4] <- "pre_wage"
 names(group_post)[4] <- "post_wage"
@@ -217,7 +217,7 @@ p13 <- ggplot(group_growth, aes(x = reorder(group, percent_growth), y = percent_
   labs(
     title = "Percent Wage Growth After COVID by Group",
     x = "",
-    y = "Percent growth from pre-COVID to post-COVID"
+    y = "Percent growth from before COVID to after COVID"
   ) +
   theme_minimal()
 
