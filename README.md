@@ -1,6 +1,6 @@
 # Wage Growth After COVID
 
-This project looks at how wage income changed after COVID using public ACS/IPUMS labor-market data. The main question is whether wage growth after COVID looked different across workers, industries, states, and occupations that were more or less remote-workable.
+This project looks at how wage income changed after COVID using public ACS/IPUMS labor market data. The main question is whether wage growth after COVID looked different across workers, industries, states, and occupations that were more or less suited to remote work.
 
 The project uses Stata for the main cleaning and regression work. R is used at the end to make the figures.
 
@@ -8,13 +8,13 @@ The project uses Stata for the main cleaning and regression work. R is used at t
 
 How were wages affected after COVID, and did those changes differ across groups of workers?
 
-The project also keeps the original remote-work question:
+The project also keeps the original remote work question:
 
-Did workers in remote-workable occupations experience different wage growth after COVID compared with workers in less remote-workable occupations?
+Did workers in occupations suited to remote work experience different wage growth after COVID compared with workers in occupations less suited to remote work?
 
 ## Data
 
-The worker-level data comes from ACS/IPUMS. The raw ACS file should be saved here:
+The worker data comes from ACS/IPUMS. The raw ACS file should be saved here:
 
 ```text
 data/raw/usa_00001.dta
@@ -37,7 +37,7 @@ INCWAGE
 PERWT
 ```
 
-Remote-workability comes from the Dingel-Neiman occupation-level work-from-home feasibility file. Save it here:
+Remote work feasibility comes from the Dingel and Neiman occupation level work from home feasibility file. Save it here:
 
 ```text
 data/raw/remote/occupations_workathome.csv
@@ -51,7 +51,7 @@ title
 teleworkable
 ```
 
-The ACS extract includes `OCCSOC`, so the Stata code can merge workers to the remote-workability data using SOC occupation codes.
+The ACS extract includes `OCCSOC`, so the Stata code can merge workers to the remote work data using SOC occupation codes.
 
 ## Main Variables
 
@@ -64,13 +64,13 @@ gen log_wage = log(annual_wage)
 
 I use annual wage income instead of hourly wage because `WKSWORK1` is missing for 2016-2018 in the current ACS extract. Using `INCWAGE` keeps the full 2016-2024 sample.
 
-The post-COVID variable is:
+The after COVID variable is:
 
 ```stata
 gen covid = year > 2020
 ```
 
-The sample keeps employed prime-age workers ages 25 to 54.
+The sample keeps employed workers ages 25 to 54.
 
 ## Method
 
@@ -80,7 +80,7 @@ The basic regression compares wages before and after COVID:
 log_wage = covid + controls
 ```
 
-The remote-workability regression uses an interaction:
+The remote work regression uses an interaction:
 
 ```text
 log_wage = remote_workable + covid + remote_workable x covid + controls
@@ -92,7 +92,7 @@ The main coefficient is:
 1.remote_workable#1.covid
 ```
 
-If this coefficient is positive, remote-workable occupations had higher wage growth after COVID relative to less remote-workable occupations. If it is negative, they had lower relative wage growth.
+If this coefficient is positive, occupations suited to remote work had higher wage growth after COVID relative to occupations less suited to remote work. If it is negative, they had lower relative wage growth.
 
 Because the outcome is log wage income, a coefficient like `0.05` is roughly a 5 percent difference.
 
@@ -157,7 +157,7 @@ The results are not written into the project yet. After running the Stata files,
 outputs/tables/regressions.txt
 ```
 
-The key number for the remote-work part is:
+The key number for the remote work part is:
 
 ```text
 1.remote_workable#1.covid
