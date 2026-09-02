@@ -108,13 +108,13 @@ restore
 
 log using "outputs/tables/regressions.txt", text replace
 
-* Main post-COVID wage regression.
+* Main wage regression after COVID.
 * The coefficient on 1.covid shows the average wage difference after 2020.
 
 reg log_wage i.covid age age2 i.educ i.sex i.race ///
     i.stateicp i.ind [pw=perwt], robust
 
-* Remote-workability regression.
+* Remote work regression.
 * Main coefficient to look at:
 * 1.remote_workable#1.covid
 *
