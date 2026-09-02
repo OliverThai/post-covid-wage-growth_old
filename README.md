@@ -199,6 +199,7 @@ Cleaned data:
 data/processed/cleaned.dta
 data/processed/remote_soc_only.dta
 data/processed/analysis_data.dta
+data/processed/remote_trends_for_r.csv
 data/processed/race_trends_for_r.csv
 data/processed/age_trends_for_r.csv
 data/processed/gender_trends_for_r.csv
@@ -222,6 +223,7 @@ Figures:
 
 ```text
 outputs/figures/overall_wage_growth.png
+outputs/figures/log_wage_trends.png
 outputs/figures/top_industry_growth.png
 outputs/figures/state_wage_levels.png
 outputs/figures/p10_p50_p90_trends.png
